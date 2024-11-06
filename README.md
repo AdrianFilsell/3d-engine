@@ -11,3 +11,7 @@ Written using MFC/C++/eigenlib/jpeglib, more details can be found here:
 Example of a scene:
 
 ![Alt text](/cover.png?raw=true "example scene")
+
+Example of a scene with texture/bump map materials:
+
+![Alt text](/bump_tex_cover.png?raw=true "example texture/bump map scene")
