@@ -9,4 +9,4 @@ Written using MFC/C++/eigenlib/jpeglib, more details can be found here:
 
 Example of a scene:
 
-![Alt text](/screengrabs/cover.png?raw=true "example scene")
+![Alt text](/cover.png?raw=true "example scene")
