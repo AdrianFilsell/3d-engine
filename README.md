@@ -1,4 +1,4 @@
-C++ 3D engine, emulates modern 3D API scene rasterisation, supports DirectX and OpenGL paradigms.
+C++ 3D engine, emulates modern 3D API scene rasterisation.\r\n
 Supports:
    DirectX/OpenGL paradigms - Flexible vertex format - Materials - Per pixel lighting -
    Flexible rendering pipeline - Multiple lights (spot/point/directional) -
