@@ -1,0 +1,502 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="resources">
+      <UniqueIdentifier>{2392cf98-6bbc-4752-8a34-a9f51242ac56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app">
+      <UniqueIdentifier>{17ac1087-aaa1-4533-b8fb-8d92730377e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3d">
+      <UniqueIdentifier>{42e5f392-6a87-4106-96b2-f92cde918330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dib">
+      <UniqueIdentifier>{b9010ca7-71b9-4942-b9de-36b9d65ab5c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dib\jpeg">
+      <UniqueIdentifier>{d18bc8a9-3e31-425d-9039-5b4299d9836d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thread">
+      <UniqueIdentifier>{4d0be613-1848-43c5-8141-fc7fd3d6f01c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc/view">
+      <UniqueIdentifier>{56b630a9-784e-4024-a785-d104afbd65fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="surface">
+      <UniqueIdentifier>{19db7f5d-6b1e-4552-865e-98b7445e18c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc/view\tools">
+      <UniqueIdentifier>{4bade195-39ab-4d3c-9ce1-9204a63c9e02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app\properties">
+      <UniqueIdentifier>{bd5731d9-05f6-419a-a74a-35e011e3c654}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="app\properties\dlg">
+      <UniqueIdentifier>{76372895-427c-4411-8666-f5508eaed3a6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource.h">
+      <Filter>resources</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildFrm.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="rasterizer.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="rasterizerDoc.h">
+      <Filter>doc/view</Filter>
+    </ClInclude>
+    <ClInclude Include="rasterizerView.h">
+      <Filter>doc/view</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_frame.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_scene.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_projection.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_camera.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_face.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_light.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="dib.h">
+      <Filter>dib</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg.h">
+      <Filter>dib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libjpeg\jpeg-8c\cderror.h">
+      <Filter>dib\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libjpeg\jpeg-8c\cdjpeg.h">
+      <Filter>dib\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libjpeg\jpeg-8c\jdct.h">
+      <Filter>dib\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libjpeg\jpeg-8c\jerror.h">
+      <Filter>dib\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libjpeg\jpeg-8c\jinclude.h">
+      <Filter>dib\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libjpeg\jpeg-8c\jmemsys.h">
+      <Filter>dib\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libjpeg\jpeg-8c\jmorecfg.h">
+      <Filter>dib\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libjpeg\jpeg-8c\jpegint.h">
+      <Filter>dib\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libjpeg\jpeg-8c\jpeglib.h">
+      <Filter>dib\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libjpeg\jpeg-8c\jversion.h">
+      <Filter>dib\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libjpeg\jpeg-8c\transupp.h">
+      <Filter>dib\jpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_rendercontext.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_mesh.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_projectionclipper.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="core.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_vertexshader.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_fragmentshader.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_obj.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_tbuffer.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_face_pos_aux.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_material.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_parallelfor.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_taskscheduler.h">
+      <Filter>thread</Filter>
+    </ClInclude>
+    <ClInclude Include="surface.h">
+      <Filter>surface</Filter>
+    </ClInclude>
+    <ClInclude Include="wintimer.h">
+      <Filter>surface</Filter>
+    </ClInclude>
+    <ClInclude Include="winthread.h">
+      <Filter>surface</Filter>
+    </ClInclude>
+    <ClInclude Include="hint.h">
+      <Filter>doc/view</Filter>
+    </ClInclude>
+    <ClInclude Include="vertexfmtdlg.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="colourwnd.h">
+      <Filter>app</Filter>
+    </ClInclude>
+    <ClInclude Include="viewtool.h">
+      <Filter>doc/view\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="translate_scale_viewtool.h">
+      <Filter>doc/view\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="rotate_viewtool.h">
+      <Filter>doc/view\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="depth_viewtool.h">
+      <Filter>doc/view\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="hittest.h">
+      <Filter>doc/view\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_planebasis.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+    <ClInclude Include="cameradepth_viewtool.h">
+      <Filter>doc/view\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="cameratranslate_viewtool.h">
+      <Filter>doc/view\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="camerarotate_viewtool.h">
+      <Filter>doc/view\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="splitterwnd.h">
+      <Filter>app\properties</Filter>
+    </ClInclude>
+    <ClInclude Include="titlewnd.h">
+      <Filter>app\properties</Filter>
+    </ClInclude>
+    <ClInclude Include="propertiesdlg.h">
+      <Filter>app\properties\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="scenedlg.h">
+      <Filter>app\properties\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="facesdlg.h">
+      <Filter>app\properties\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="materialsdlg.h">
+      <Filter>app\properties\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="propertiesbar.h">
+      <Filter>app\properties</Filter>
+    </ClInclude>
+    <ClInclude Include="scenetree.h">
+      <Filter>app\properties\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="lightdlg.h">
+      <Filter>app\properties\dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="3d_bbox.h">
+      <Filter>3d</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ChildFrm.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="rasterizer.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="rasterizerView.cpp">
+      <Filter>doc/view</Filter>
+    </ClCompile>
+    <ClCompile Include="rasterizerDoc.cpp">
+      <Filter>doc/view</Filter>
+    </ClCompile>
+    <ClCompile Include="dib.cpp">
+      <Filter>dib</Filter>
+    </ClCompile>
+    <ClCompile Include="jpeg.cpp">
+      <Filter>dib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jaricom.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcapimin.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcapistd.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcarith.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jccoefct.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jccolor.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcdctmgr.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jchuff.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcinit.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcmainct.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcmarker.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcmaster.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcomapi.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcparam.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcprepct.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jcsample.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jctrans.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdapimin.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdapistd.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdarith.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdatadst.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdatasrc.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdcoefct.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdcolor.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jddctmgr.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdhuff.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdinput.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdmainct.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdmarker.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdmaster.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdmerge.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdpostct.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdsample.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jdtrans.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jerror.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jfdctflt.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jfdctfst.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jfdctint.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jidctflt.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jidctfst.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jidctint.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jmemmgr.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jmemnobs.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jquant1.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jquant2.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\jutils.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libjpeg\jpeg-8c\transupp.c">
+      <Filter>dib\jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="thread_parallelfor.cpp">
+      <Filter>thread</Filter>
+    </ClCompile>
+    <ClCompile Include="surface.cpp">
+      <Filter>surface</Filter>
+    </ClCompile>
+    <ClCompile Include="wintimer.cpp">
+      <Filter>surface</Filter>
+    </ClCompile>
+    <ClCompile Include="winthread.cpp">
+      <Filter>surface</Filter>
+    </ClCompile>
+    <ClCompile Include="vertexfmtdlg.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="colourwnd.cpp">
+      <Filter>app</Filter>
+    </ClCompile>
+    <ClCompile Include="viewtool.cpp">
+      <Filter>doc/view\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="translate_scale_viewtool.cpp">
+      <Filter>doc/view\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="rotate_viewtool.cpp">
+      <Filter>doc/view\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="depth_viewtool.cpp">
+      <Filter>doc/view\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="cameradepth_viewtool.cpp">
+      <Filter>doc/view\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="cameratranslate_viewtool.cpp">
+      <Filter>doc/view\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="camerarotate_viewtool.cpp">
+      <Filter>doc/view\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="splitterwnd.cpp">
+      <Filter>app\properties</Filter>
+    </ClCompile>
+    <ClCompile Include="titlewnd.cpp">
+      <Filter>app\properties</Filter>
+    </ClCompile>
+    <ClCompile Include="propertiesdlg.cpp">
+      <Filter>app\properties\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="scenedlg.cpp">
+      <Filter>app\properties\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="facesdlg.cpp">
+      <Filter>app\properties\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="materialsdlg.cpp">
+      <Filter>app\properties\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="propertiesbar.cpp">
+      <Filter>app\properties</Filter>
+    </ClCompile>
+    <ClCompile Include="scenetree.cpp">
+      <Filter>app\properties\dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="lightdlg.cpp">
+      <Filter>app\properties\dlg</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\rasterizer.ico">
+      <Filter>resources</Filter>
+    </Image>
+    <Image Include="res\rasterizerDoc.ico">
+      <Filter>resources</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>resources</Filter>
+    </Image>
+    <Image Include="res\toolbar1.bmp">
+      <Filter>resources</Filter>
+    </Image>
+    <Image Include="res\3dtoolbar_32bpp.bmp">
+      <Filter>resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="rasterizer.rc">
+      <Filter>resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\rasterizer.rc2">
+      <Filter>resources</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="todo.txt" />
+    <Text Include="notes.txt" />
+  </ItemGroup>
+</Project>

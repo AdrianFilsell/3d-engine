@@ -1,0 +1,151 @@
+-	History: 1/11/2024
+	------------------
+	
+-	C++ emulation of modern 3D API scene rasterisation, supports DirectX and OpenGL paradigms.
+			utah teapot (per pixel lighting)
+					2256 faces
+					position + normal vertex format
+					colour from bound material
+					12th gen intel i5 / 2500 Mhz / 12 core Asus laptop
+					approx. 1075 fps
+	DirectX:
+			left handed world coordinate system (positive x-axis goes right,positive y-axis goes up,positive z-axis goes forward)
+			camera looks down positive z axis
+			projection matrix transforms viewing frustrum into NDC cuboid
+					NDC extents are X[-1,1], Y[-1,1], Z[0,1]
+					NDC near plane maps to 0, far plane maps to 1
+					NDC coordinate system is left handed
+			row major matrices (row vectors/pre-multiplication)
+			face vertices CW orientation
+	OpenGL:
+			right handed world coordinate system (positive x-axis goes right,positive y-axis goes up,positive z-axis goes behind)
+			camera looks down negative z axis
+			projection matrix transforms viewing frustrum into NDC cube
+				NDC extents are X[-1,1], Y[-1,1], Z[-1,1]
+				NDC near plane maps to -1, far plane maps to 1
+				NDC system is left handed
+			column major matrices (column vectors/post-multiplication)
+			face vertices CCW orientation
+
+-	Hierarchical scene graph, supports composite model space to world space transforms.
+
+-	Flexible/customisable render pipeline.
+	Default vertex shader:
+			transform 3d model space faces to 4d clip space/world space
+				vertices use model to clip space transform
+				normals use transposed inverse model space to world space transform
+			determine if transformed face is completely outside 4d clip space cuboid
+			multi core processor aware
+	Default fragment shader:
+			skip 4d faces that are outside 4d clip space cuboid
+			clip 4d faces that are not completely inside 4d clip space cuboid (sutherland-hodgman)
+			use barycentric fragment coordinates to interpolate vertex attributes (per pixel lighting)
+			material aware
+			shadow map aware
+			multi core processor aware
+
+-	Multiple scene lights.
+	Default light types:
+			spot light
+			point light
+			directional light
+
+-	Multiple scene models.
+	Import *.obj models
+	Flexible/customisable vertex format.
+	Default vertex attributes (any combination supported):
+			position (mandatory)
+			normal
+			colour
+			texture UV
+			bump UV
+		
+-	Multiple model materials
+	Bind material to face range
+	Default material attributes (any combination supported):
+			colour
+				diffuse
+				specular
+				ambient
+				shininess
+			texture
+			bump map
+			cubic environment map
+
+-	Multiple scene windows.
+	Default scene window:
+			camera
+			selection
+			translate/scale tool
+			depth tool
+			rotate tool
+			camera translate tool
+			camera depth tool
+			camera rotate tool
+			render models (bool)
+			render light models (bool)
+			render shadow maps (bool)
+			render stats. dialog (average scene render time / FPS)
+
+-	Scene ui pane.
+		scene hierarchy
+		set model name
+		reparent model
+		show/hide model
+		set model opacity
+		turn light on/off
+
+-	Light ui pane.
+		set range
+		set colour
+			diffuse
+			specular
+			ambient
+		set attenuation
+			constant
+			linear
+			quadratic
+		set spotlight light cone
+			umbra
+			penumbra
+
+-	Face ui pane.
+		set vertex position
+			model space
+			world space
+		set vertex normal
+			model space
+			transposed inverse world space
+		set vertex UV
+			texture map
+			bump map
+		set vertex colour
+
+-	Material ui pane.
+		add material
+		delete material
+		set face range
+		set colour
+			diffuse
+			specular
+			ambient
+			on/off
+		set shininess
+		set texture
+			image
+			on/off
+		set bump map
+			image
+			on/off
+		set cubic environment map
+			image
+			on/off
+		set face range vertex texture/bumpmap UV (help utility)
+			flat
+			cylindrical
+			spherical
+
+-	Nominal implementation of orthographic projection
+		isometric
+		dimetric
+		trimetric

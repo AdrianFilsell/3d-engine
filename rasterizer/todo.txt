@@ -1,0 +1,24 @@
+
+implement topleft rule
+
+cel shading
+
+turn backface cull off/on
+
+nurbs
+
+lathe
+
+metaballs
+
+obj.mtl support
+
+cubic env map with scene rendered into it
+
+lapped texture for rabbit
+lapped textures -> fur/hair
+
+fill style - solid, wireframe, point
+line/point degenerate rendering...
+
+implement the brdf light model...
