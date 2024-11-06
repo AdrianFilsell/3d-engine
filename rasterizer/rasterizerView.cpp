@@ -663,7 +663,22 @@ void CrasterizerView::OnUpdateShadowRender(CCmdUI *pCmdUI)
 
 void CrasterizerView::OnImportObj(void)
 {
+	DWORD dw = ::GetCurrentDirectory(0,nullptr);
+	CString cs;
+	dw = ::GetCurrentDirectory(dw,cs.GetBuffer(dw-1));
+	cs.ReleaseBuffer();
+
+	TCHAR drive[_MAX_DRIVE],dir[_MAX_DIR],fname[_MAX_FNAME],ext[_MAX_EXT];
+	_tsplitpath_s((LPCTSTR)cs,drive,_MAX_DRIVE,dir,_MAX_DIR,fname,_MAX_FNAME,ext,_MAX_EXT);
+
+	CString csObjDir=CString(drive)+CString(dir);
+	csObjDir.TrimRight();
+	if(csObjDir.Right(1)==_T("\\") || csObjDir.Right(1)==_T("/"))
+		csObjDir=csObjDir.Left(csObjDir.GetLength()-1);
+	const CString csInitialDir=csObjDir+_T("\\")+_T("3dobj");
+
 	CFileDialog dlg(true);
+	dlg.m_ofn.lpstrInitialDir=csInitialDir;
 	if(dlg.DoModal()!=IDOK)
 		return;
 	
