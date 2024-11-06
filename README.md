@@ -15,3 +15,7 @@ Example of a scene:
 Example of a scene with texture/bump map materials:
 
 ![Alt text](/bump_tex_cover.png?raw=true "example texture/bump map scene")
+
+Example of a scene with shadow maps:
+
+![Alt text](/shadowmap_cover.png?raw=true "example shadow map scene")
