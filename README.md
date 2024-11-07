@@ -5,6 +5,7 @@ Supports:
    Flexible rendering pipeline - Multiple lights (spot/point/directional) -
    Hierarchical scene structure - Shadow maps - Texture maps - Bump maps -
    Cubic environment maps - Multi core aware
+   
 Written using MFC/C++/eigenlib/jpeglib, more details can be found here:
 
 [https://www.youtube.com/watch?v=DgvHXth6mK4](https://www.youtube.com/watch?v=DgvHXth6mK4)
