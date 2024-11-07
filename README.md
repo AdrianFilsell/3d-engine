@@ -4,7 +4,7 @@ Supports:
    DirectX/OpenGL paradigms - Flexible vertex format - Materials - Per pixel lighting -
    Flexible rendering pipeline - Multiple lights (spot/point/directional) -
    Hierarchical scene structure - Shadow maps - Texture maps - Bump maps -
-   Cubic environment maps - Multi core aware
+   Cubic environment maps - Multi core aware.
    
 Written using MFC/C++/eigenlib/jpeglib, more details can be found here:
 
