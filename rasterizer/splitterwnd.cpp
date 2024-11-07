@@ -267,9 +267,9 @@ void splitterwnd::setminimise(splitterwndpane *pPane,const bool b)
 	}
 	else
 	{
-		const int nClientAvailable=rcClientRect.Height()-(vRepos[vRepos.size()-1].first+vRepos[vRepos.size()-1].second);
+		int nClientAvailable=rcClientRect.Height()-(vRepos[vRepos.size()-1].first+vRepos[vRepos.size()-1].second);
 
-		const int nDelta=std::max<>(0,std::min<>(pPane->getmaximise()-vRepos[nPane].second,nClientAvailable));
+		int nDelta=std::max<>(0,std::min<>(pPane->getmaximise()-vRepos[nPane].second,nClientAvailable));
 		vRepos[nPane].second+=nDelta;
 		
 		int nShrink=pPane->getmaximise()-vRepos[nPane].second;
@@ -313,6 +313,16 @@ void splitterwnd::setminimise(splitterwndpane *pPane,const bool b)
 		}
 
 		settop(vRepos);
+
+		nClientAvailable=rcClientRect.Height()-(vRepos[vRepos.size()-1].first+vRepos[vRepos.size()-1].second);
+		nDelta=(pPane->getmax()==-1) ? nClientAvailable : std::min<>(nClientAvailable,pPane->getmax()-vRepos[nPane].second);
+		if(nDelta>0)
+		{
+			// use additional space
+			vRepos[nPane].second+=nDelta;
+			settop(vRepos);
+		}
+
 		reposlayout(vRepos);
 	}
 }
