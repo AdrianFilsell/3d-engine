@@ -193,11 +193,18 @@ void vertexfmtdlg::OnOK(void)
 	const bool bMatCubic=m_nMatCubicEnvCheck==1;
 	const bool bMatTex=m_nMatTexCheck==1;
 	const bool bMatBump=m_nMatBumpCheck==1;
-	const bool bMatCol=(!bVertexCol && !bVertexTex && !bMatCubic && !(m_nMatColCheck==1) && !(m_nMatTexCheck==1) && !(m_nMatCubicEnvCheck==1));
+	const bool bMatCol=m_nMatColCheck==1;
+	const bool bDefaultCol=!bMatCol && !bMatCubic && !bMatTex	// no colour from material
+						   &&									// AND	
+						   !bVertexCol && !bVertexTex;			// no colour from vertices
 	
+	const af3d::materialcol<> col=m_Mat.getcol();
 	m_Mat.clear(af3d::face_vertex_att::t_material);
 
 	if(bMatCol)
+		m_Mat.setcol(col);
+	else
+	if(bDefaultCol)
 		m_Mat.setcol(af3d::materialcol<>());
 	if(bMatCubic)
 	{
