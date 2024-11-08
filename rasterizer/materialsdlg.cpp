@@ -780,7 +780,6 @@ void materialsdlg::enabledisable(void)
 	const bool bSel=m_pView && m_pView->getselection();
 	const bool bMats=!!getmaterials();
 	const bool bMat=!!p;
-	const bool bColourVertexAtts=m_nVertexAtts&af3d::face_vertex_att::t_col;
 	bool bImageVertexAtts=false;
 	switch(m_nImage)
 	{
@@ -800,12 +799,12 @@ void materialsdlg::enabledisable(void)
 	m_RangeInclusiveToSpin.EnableWindow(bMat);
 	GetDlgItem(IDC_RANGE_ALL)->EnableWindow(bMat);
 
-	m_ColourCombo.EnableWindow(bColourVertexAtts && bMat && m_nColourEnable);
-	m_ColWnd.EnableWindow(bColourVertexAtts && bMat && m_nColourEnable);
+	m_ColourCombo.EnableWindow(bMat && m_nColourEnable);
+	m_ColWnd.EnableWindow(bMat && m_nColourEnable);
 	m_ColWnd.Invalidate();
-	GetDlgItem(IDC_COLOUR_CHECK)->EnableWindow(bColourVertexAtts && bMat);
-	GetDlgItem(IDC_SHININESS_STATIC)->EnableWindow(bColourVertexAtts && bMat && m_nColourEnable);
-	m_ShininessEdit.EnableWindow(bColourVertexAtts && bMat && m_nColourEnable);
+	GetDlgItem(IDC_COLOUR_CHECK)->EnableWindow(bMat);
+	GetDlgItem(IDC_SHININESS_STATIC)->EnableWindow(bMat && m_nColourEnable);
+	m_ShininessEdit.EnableWindow(bMat && m_nColourEnable);
 
 	m_ImageCombo.EnableWindow(bMat);
 	GetDlgItem(IDC_IMAGE_BROWSE)->EnableWindow(bImageVertexAtts && bMat && m_nImageEnable);
@@ -882,7 +881,7 @@ void materialsdlg::getcolon(int& n)const
 {
 	af3d::material<> *p=getmaterial();
 	if(p)
-		n=(p->getatts(true)&m_nVertexAtts)&af3d::face_vertex_att::t_col?BST_CHECKED:BST_UNCHECKED;
+		n=p->getatts(true)&af3d::face_vertex_att::t_col?BST_CHECKED:BST_UNCHECKED;
 }
 
 void materialsdlg::getimageon(int& n)const
@@ -891,8 +890,8 @@ void materialsdlg::getimageon(int& n)const
 	if(p)
 		switch(m_nImage)
 		{
-			case 0:n=(p->getatts(true)&m_nVertexAtts)&af3d::face_vertex_att::t_tex ? BST_CHECKED : BST_UNCHECKED;break;
-			case 1:n=(p->getatts(true)&m_nVertexAtts)&af3d::face_vertex_att::t_bump ? BST_CHECKED : BST_UNCHECKED;break;
+			case 0:n=p->getatts(true)&af3d::face_vertex_att::t_tex ? BST_CHECKED : BST_UNCHECKED;break;
+			case 1:n=p->getatts(true)&af3d::face_vertex_att::t_bump ? BST_CHECKED : BST_UNCHECKED;break;
 			case 2:n=p->getatts(true)&af3d::face_vertex_att::t_env_cubic ? BST_CHECKED : BST_UNCHECKED;break;
 		}
 }
