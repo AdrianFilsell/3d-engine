@@ -4,7 +4,8 @@ Supports:
    DirectX/OpenGL paradigms - Flexible vertex format - Materials - Per pixel lighting -
    Flexible rendering pipeline - Multiple lights (spot/point/directional) -
    Hierarchical scene structure - Shadow maps - Texture maps - Bump maps -
-   Cubic environment maps - Multi core aware.
+   Cubic environment maps - Quantize diffuse colour - Quantize specular highlight -
+   Silhouette - Cel Shading - Multi core aware.
    
 Written using MFC/C++/eigenlib/jpeglib, more details can be found here:
 
@@ -18,6 +19,10 @@ Example of a scene:
 Example of a scene with texture/bump map materials:
 
 ![Alt text](/bump_tex_cover.png?raw=true "example texture/bump map scene")
+
+Example of a scene with cel shading:
+
+![Alt text](/cel_shading_cover.png?raw=true "example texture/cel_shading scene")
 
 Example of a scene with shadow maps:
 
