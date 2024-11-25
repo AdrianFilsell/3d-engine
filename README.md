@@ -22,7 +22,7 @@ Example of a scene with texture/bump map materials:
 
 Example of a scene with cel shading:
 
-![Alt text](/cel_shading_cover.png?raw=true "example texture/cel_shading scene")
+![Alt text](/cel_shading.png?raw=true "example texture/cel_shading scene")
 
 Example of a scene with shadow maps:
 
