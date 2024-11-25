@@ -28,6 +28,12 @@ public:
 	__forceinline void setspecular(const vec3<T>& c){m_Specular=c;}
 	__forceinline void setshininess(const T d){m_Shininess=d<0?0:d;}
 	
+	__forceinline bool getquantize(void)const{return m_DiffuseQuantize.isempty() && m_SpecularQuantize.isempty() ? false : true;}
+	__forceinline const quantize_static_3<T>& getdiffusequantize(void)const{return m_DiffuseQuantize;}
+	__forceinline const quantize_static_3<T>& getspecularquantize(void)const{return m_SpecularQuantize;}
+	__forceinline void setdiffusequantize(const quantize_static_3<T>& q){m_DiffuseQuantize=q;}
+	__forceinline void setspecularquantize(const quantize_static_3<T>& q){m_SpecularQuantize=q;}
+	
 	__forceinline static const vec3<T>& getdefdiffuse(void){static const vec3<T> c(1,1,1);return c;}
 	__forceinline static const vec3<T>& getdefambient(void){static const vec3<T> c(1,1,1);return c;}
 	__forceinline static const vec3<T>& getdefspecular(void){static const vec3<T> c(1,1,1);return c;}
@@ -39,6 +45,8 @@ public:
 		m_Ambient=o.m_Ambient;
 		m_Specular=o.m_Specular;
 		m_Shininess=o.m_Shininess;
+		m_DiffuseQuantize=o.m_DiffuseQuantize;
+		m_SpecularQuantize=o.m_SpecularQuantize;
 		return *this;
 	}
 protected:
@@ -53,6 +61,8 @@ protected:
 	// v.high				100+		mirror like surfaces
 	af::nonnegpowerexp<T> m_Shininess;
 	static const af::nonnegpowerexp<T> s_DefShininess;
+	quantize_static_3<T> m_DiffuseQuantize;
+	quantize_static_3<T> m_SpecularQuantize;
 };
 
 template <typename T> const af::nonnegpowerexp<T> materialcol<T>::s_DefShininess(5);

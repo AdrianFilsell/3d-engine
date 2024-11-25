@@ -79,30 +79,32 @@ public:
 		return *this;
 	}
 
-    template <typename DIFFUSE> __forceinline void modulate_inline(const shadowmap<T> *pShadowMap,const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
-																   const DIFFUSE& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
-																   const bool bSum,
-																   T& out_0,T& out_1,T& out_2)const
+    template <bool QUANTIZE> __forceinline void modulate_inline(const shadowmap<T> *pShadowMap,const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
+																const vec3<T>& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
+																const bool bSum,
+																const quantize_static_3<T>& diffuseQ,const quantize_static_3<T>& specularQ,
+																T& out_0,T& out_1,T& out_2)const
     {
 		switch(m_Type)
 		{
 			case t_null:break;
-			case t_point:point_modulate<DIFFUSE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,out_0,out_1,out_2);break;
-			case t_spot:spot_modulate<DIFFUSE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,out_0,out_1,out_2);break;
-			case t_directional:directional_modulate<DIFFUSE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,out_0,out_1,out_2);break;
+			case t_point:point_modulate<QUANTIZE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,diffuseQ,specularQ,out_0,out_1,out_2);break;
+			case t_spot:spot_modulate<QUANTIZE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,diffuseQ,specularQ,out_0,out_1,out_2);break;
+			case t_directional:directional_modulate<QUANTIZE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,diffuseQ,specularQ,out_0,out_1,out_2);break;
 		}
 	}
-    template <typename DIFFUSE> void modulate_call(const shadowmap<T> *pShadowMap,const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
-												   const DIFFUSE& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
-												   const bool bSum,
-												   T& out_0,T& out_1,T& out_2)const
+    template <bool QUANTIZE> void modulate_call(const shadowmap<T> *pShadowMap,const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
+												const vec3<T>& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
+												const bool bSum,
+												const quantize_static_3<T>& diffuseQ,const quantize_static_3<T>& specularQ,
+												T& out_0,T& out_1,T& out_2)const
     {
 		switch(m_Type)
 		{
 			case t_null:break;
-			case t_point:point_modulate<DIFFUSE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,out_0,out_1,out_2);break;
-			case t_spot:spot_modulate<DIFFUSE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,out_0,out_1,out_2);break;
-			case t_directional:directional_modulate<DIFFUSE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,out_0,out_1,out_2);break;
+			case t_point:point_modulate<QUANTIZE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,diffuseQ,specularQ,out_0,out_1,out_2);break;
+			case t_spot:spot_modulate<QUANTIZE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,diffuseQ,specularQ,out_0,out_1,out_2);break;
+			case t_directional:directional_modulate<QUANTIZE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,diffuseQ,specularQ,out_0,out_1,out_2);break;
 		}
 	}
 
@@ -137,11 +139,12 @@ protected:
 	T m_dUmbraAngle;								// inner angle ( umbra ) of spotlight cone
 	T m_dPenumbraAngle;								// outer angle ( penumbra ) of spotlight cone
 	
-	template <typename DIFFUSE,type LT> __forceinline void generic_modulate(const shadowmap<T> *pShadowMap,
-																			const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
-																			const DIFFUSE& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
-																			const bool bSum,
-																			T& out_0,T& out_1,T& out_2)const
+	template <type LT,bool QUANTIZE> __forceinline void generic_modulate(const shadowmap<T> *pShadowMap,
+																		 const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
+																		 const vec3<T>& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
+																		 const bool bSum,
+																		 const quantize_static_3<T>& diffuseQ,const quantize_static_3<T>& specularQ,
+																		 T& out_0,T& out_1,T& out_2)const
 	{
 		// Calculate shadow map intensity
 		T dShaodwMapIntensity=1.0;
@@ -186,8 +189,6 @@ protected:
 				spot_pnt_lightDirNorm=spot_pnt_lightDir;
 				spot_pnt_lightDirNorm.normalize();
 				dClampedDot=fragnorm.dot(spot_pnt_lightDirNorm);
-				if(dClampedDot<0)
-					dClampedDot=0;
 				
 				if(bSpecular)
 					reflect(-spot_pnt_lightDirNorm[0],-spot_pnt_lightDirNorm[1],-spot_pnt_lightDirNorm[2],fragnorm,reflectDir); // Using the custom reflect function
@@ -198,8 +199,6 @@ protected:
 			case t_directional:
 			{
 				dClampedDot=fragnorm.dot(m_InvWorldDir);
-				if(dClampedDot<0)
-					dClampedDot=0;
 
 				if(bSpecular)
 					reflect(m_WorldDir[0],m_WorldDir[1],m_WorldDir[2],fragnorm,reflectDir); // Using the custom reflect function
@@ -207,6 +206,13 @@ protected:
 			break;
 			default:return;
 		}
+
+		// Quantization threshold
+		if(QUANTIZE && !diffuseQ.isempty())
+			dClampedDot=diffuseQ.quantize(dClampedDot);
+		else
+		if(dClampedDot<0)
+			dClampedDot=0;
 
 		// Ambient
 		vec3<T> a;
@@ -237,7 +243,7 @@ protected:
 				if(dClampedt<0)
 					dClampedt=0;
 				//const T spec = pow(dt<0.0?0.0:dt,shininess.getexp());
-				const T spec = af::nonneg_pow(dClampedt,shininess);
+				const T spec = QUANTIZE && !specularQ.isempty()?specularQ.quantize(af::nonneg_pow(dClampedt,shininess)):af::nonneg_pow(dClampedt,shininess); // Quantize the specular intensity
 
 				s[0] = spec * m_Specular[0] * specular[0];
 				s[1] = spec * m_Specular[1] * specular[1];
@@ -335,7 +341,7 @@ protected:
 			if(dClampedt<0)
 				dClampedt=0;
 			//const T spec = pow(dt<0.0?0.0:dt,shininess.getexp());
-			const T spec = af::nonneg_pow(dClampedt,shininess);
+			const T spec = QUANTIZE && !specularQ.isempty()?specularQ.quantize(af::nonneg_pow(dClampedt,shininess)):af::nonneg_pow(dClampedt,shininess); // Quantize the specular intensity
 
 			s[0] = spec * m_Specular[0] * specular[0];
 			s[1] = spec * m_Specular[1] * specular[1];
@@ -413,29 +419,32 @@ protected:
 			}
 		}
 	}
-	template <typename DIFFUSE> __forceinline void point_modulate(const af3d::shadowmap<T> *pShadowMap,const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
-																  const DIFFUSE& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
-																  const bool bSum,
-																  T& out_0,T& out_1,T& out_2)const
+	template <bool QUANTIZE> __forceinline void point_modulate(const af3d::shadowmap<T> *pShadowMap,const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
+															   const vec3<T>& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
+															   const bool bSum,
+															   const quantize_static_3<T>& diffuseQ,const quantize_static_3<T>& specularQ,
+															   T& out_0,T& out_1,T& out_2)const
 	{
 		// emits light equally in all directions from a single point in space
-		generic_modulate<DIFFUSE,t_point>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,out_0,out_1,out_2);
+		generic_modulate<t_point,QUANTIZE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,diffuseQ,specularQ,out_0,out_1,out_2);
 	}
-	template <typename DIFFUSE> __forceinline void spot_modulate(const shadowmap<T> *pShadowMap,const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
-																 const DIFFUSE& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
-																 const bool bSum,
-																 T& out_0,T& out_1,T& out_2)const
+	template <bool QUANTIZE> __forceinline void spot_modulate(const shadowmap<T> *pShadowMap,const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
+															  const vec3<T>& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
+															  const bool bSum,
+															  const quantize_static_3<T>& diffuseQ,const quantize_static_3<T>& specularQ,
+															  T& out_0,T& out_1,T& out_2)const
 	{
 		// emits light cone from a single point in space
-		generic_modulate<DIFFUSE,t_spot>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,out_0,out_1,out_2);
+		generic_modulate<t_spot,QUANTIZE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,diffuseQ,specularQ,out_0,out_1,out_2);
 	}
-	template <typename DIFFUSE> __forceinline void directional_modulate(const shadowmap<T> *pShadowMap,const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
-																		const DIFFUSE& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
-																		const bool bSum,
-																		T& out_0,T& out_1,T& out_2)const
+	template <bool QUANTIZE> __forceinline void directional_modulate(const shadowmap<T> *pShadowMap,const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
+																	 const vec3<T>& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
+																	 const bool bSum,
+																	 const quantize_static_3<T>& diffuseQ,const quantize_static_3<T>& specularQ,
+																	 T& out_0,T& out_1,T& out_2)const
 	{
 		// emits light equally in a directions from an infinite distance from fragment
-		generic_modulate<DIFFUSE,t_directional>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,out_0,out_1,out_2);
+		generic_modulate<t_directional,QUANTIZE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,diffuse,ambient,specular,shininess,bSum,diffuseQ,specularQ,out_0,out_1,out_2);
 	}
 	__forceinline void posclamp(const T d,vec3<T>& r)const{posclamp(d,r[0],r[1],r[2]);}
 	__forceinline void posclamp(const T d,T& r0,T& r1,T& r2)const
@@ -468,9 +477,10 @@ public:
 		m_pShadowMaps=pLights && pShadowMaps && pShadowMaps->size()>=pLights->size()?pShadowMaps:nullptr;
 	}
 	~lightcache(){}
-    template <typename DIFFUSE,typename LIT> __forceinline void modulate(const vec3<LIT::template t_flt>& campos,const vec3<LIT::template t_flt>& fragpos,const vec3<LIT::template t_flt>& fragnorm,const LIT::template t_flt dNDCspaceZ,
-																		 const DIFFUSE& diffuse,const vec3<LIT::template t_flt>& ambient,const vec3<LIT::template t_flt>& specular,const af::nonnegpowerexp<LIT::template t_flt>& shininess,
-																		 LIT& out)const
+    template <bool QUANTIZE> __forceinline void modulate(const vec3<T>& campos,const vec3<T>& fragpos,const vec3<T>& fragnorm,const T dNDCspaceZ,
+														 const vec3<T>& diffuse,const vec3<T>& ambient,const vec3<T>& specular,const af::nonnegpowerexp<T>& shininess,
+														 const quantize_static_3<T>& diffuseQ,const quantize_static_3<T>& specularQ,
+														 vec3<T>& out)const
     {
 		if(m_nLights<1)
 		{
@@ -482,7 +492,7 @@ public:
 
 		const bool bMultiple=(m_nLights>1);
 
-		DIFFUSE diff;
+		vec3<T> diff;
 		if(bMultiple)
 		{
 			diff[0]=diffuse[0];
@@ -496,12 +506,12 @@ public:
 			const shadowmap<T> *pShadowMap=m_pShadowMaps?(*m_pShadowMaps)[n].second.get():nullptr;
 			
 			#ifdef _DEBUG
-				LIT pre;
+				vec3<T> pre;
 				if(bSum)
 					pre=out;
 			#endif
 
-			m_vLights[n]->modulate_inline<DIFFUSE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,bMultiple?diff:diffuse,ambient,specular,shininess,bSum,out[0],out[1],out[2]);
+			m_vLights[n]->modulate_inline<QUANTIZE>(pShadowMap,campos,fragpos,fragnorm,dNDCspaceZ,bMultiple?diff:diffuse,ambient,specular,shininess,bSum,diffuseQ,specularQ,out[0],out[1],out[2]);
 
 			// clamp
 			if(bSum)

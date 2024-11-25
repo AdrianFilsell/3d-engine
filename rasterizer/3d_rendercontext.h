@@ -118,10 +118,27 @@ protected:
 	{
 		using t_base_types=face_types<F>;
 		using t_vs_types=vertexshader_types<t_base_types,P,PT>;
-		using t_vs=vertexshader<t_vs_types>;
-		using t_fs=fragmentshader<fragmentshaderknl<t_vs_types>>;
 
+		// effect
+		switch(pFrame->geteffect())
+		{
+			case vertexattsframe<P::template t_flt>::et_silhouette:
+			{
+				const P::template t_flt dWorldScale=1.075; // fixed value could be in the effect if we didnt just store an enum
+
+				using t_vs=silhouette_vertexshader<t_vs_types>;
+				t_vs::render(pSched,pFrame,dWorldScale,pCamera,pProjection,pVSScratch);
+
+				using t_fs=silhouette_fragmentshader<fragmentshaderknl<t_vs_types,ft_reverse>>;
+				t_fs::render(pSched,pFrame,pCamera,rDstNDC,rDstNDCClip,dstNDCtobuf,pVSScratch,pZBuffer,pGBuffer);
+			}
+			break;
+		}
+
+		using t_vs=vertexshader<t_vs_types>;
 		t_vs::render(pSched,pFrame,pCamera,pProjection,pVSScratch);
+
+		using t_fs=fragmentshader<fragmentshaderknl<t_vs_types,ft_lit|ft_writezbuffer>>;
 		t_fs::render(pSched,pFrame,lm,pCamera,(nTypes & vertexattsframe<P::template t_flt>::t_shadow),rDstNDC,rDstNDCClip,dstNDCtobuf,pVSScratch,pZBuffer,pGBuffer);
 		t_fs::render(pSched,pFrame,rDstNDCClip,dstNDCtobuf,pGBuffer,pDeviceDib);
 	}

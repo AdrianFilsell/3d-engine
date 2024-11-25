@@ -12,7 +12,8 @@ template <typename T=RAS_FLTTYPE> class vertexattsframe
 public:
 	enum type {t_scene=0x1,t_mesh=0x2,t_light_mesh=0x4,t_shadow=0x8,
 			   t_all=(t_scene|t_mesh|t_light_mesh|t_shadow)};
-
+	enum effecttype {et_null=0x0,et_silhouette};
+	
 	virtual ~vertexattsframe(){}
 
 	template <typename R> static std::shared_ptr<R>clone(const R *p,const vertexattsframe *pParent) {return std::shared_ptr<R>(static_cast<R*>(static_cast<const vertexattsframe*>(p)->clone(pParent)));}
@@ -118,6 +119,9 @@ public:
 	
 	__forceinline bool getvisible(void)const{return m_bVisible;}
 	void setvisible(const bool b){m_bVisible=b;}
+
+	__forceinline effecttype geteffect(void)const{return m_Effect;}
+	void seteffect(const effecttype e){m_Effect=e;}
 
 	__forceinline const facemodelbbox<T>& getbbox(const bool bComposite)const{return bComposite?m_CompositeBBox:m_BBox;}
 	void setbbox(const facemodelbbox<T>& b){m_BBox=b;}
@@ -236,6 +240,7 @@ public:
 		m_dOpacity=o.m_dOpacity;
 		m_spMaterials=o.m_spMaterials;
 		m_bCompositeBBoxInvalid=o.m_bCompositeBBoxInvalid;
+		m_Effect=o.m_Effect;
 		return *this;
 	}
 
@@ -295,8 +300,9 @@ protected:
 	std::string m_Name;
 	T m_dOpacity;
 	std::shared_ptr<std::vector<std::shared_ptr<material<T>>>> m_spMaterials;
+	effecttype m_Effect;
 
-	vertexattsframe(const type t,const int nVertexAtts):m_Type(t),m_nVertexAtts(nVertexAtts),m_pParent(nullptr),m_bVisible(true),m_dOpacity(1),m_bCompositeBBoxInvalid(true){m_Name="frame";}
+	vertexattsframe(const type t,const int nVertexAtts):m_Effect(et_null),m_Type(t),m_nVertexAtts(nVertexAtts),m_pParent(nullptr),m_bVisible(true),m_dOpacity(1),m_bCompositeBBoxInvalid(true){m_Name="frame";}
 	virtual vertexattsframe* clone(vertexattsframe *pParent)const=0;
 
 	static void get_ex(vertexattsframe<T> *pFrom,const int nTypes,std::vector<vertexattsframe<T>*>& vFrames)

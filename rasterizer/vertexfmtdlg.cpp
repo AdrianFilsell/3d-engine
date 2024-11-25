@@ -41,6 +41,11 @@ vertexfmtdlg::vertexfmtdlg(CWnd* pParent /*=nullptr*/)
 
 	m_nMatColCheck=0;
 
+	m_nQuantizeMatDiffuseCheck=0;
+	m_nQuantizeMatShininessCheck=0;
+
+	m_nEffectCombo=0;
+
 	DWORD dw = ::GetCurrentDirectory(0,nullptr);
 	CString cs;
 	dw = ::GetCurrentDirectory(dw,cs.GetBuffer(dw-1));
@@ -90,6 +95,7 @@ void vertexfmtdlg::DoDataExchange(CDataExchange* pDX)
 	DDX_CBIndex(pDX,IDC_BUMP_COMBO,m_nBumpGenCombo);
 
 	DDX_Check(pDX,IDC_MAT_COL_CHECK,m_nMatColCheck);
+	DDX_Check(pDX,IDC_MAT_DIFFUSE_CHECK,m_nQuantizeMatDiffuseCheck);
 
 	DDX_Check(pDX,IDC_MAT_CUBIC_CHECK,m_nMatCubicEnvCheck);
 	DDX_Text(pDX,IDC_MAT_CUBIC_STATIC,m_csCubicEnv);
@@ -101,8 +107,11 @@ void vertexfmtdlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX,IDC_MAT_BUMP_STATIC,m_csBump);
 
 	DDX_Text(pDX,IDC_MAT_SHININESS_EDIT,m_csMatShininess);
+	DDX_Check(pDX,IDC_MAT_SHININESS_CHECK,m_nQuantizeMatShininessCheck);
 
 	DDX_Text(pDX,IDC_OPACITY_EDIT,m_nOpacity);
+
+	DDX_CBIndex(pDX,IDC_EFFECT_COMBO,m_nEffectCombo);
 }
 
 
@@ -123,6 +132,8 @@ BEGIN_MESSAGE_MAP(vertexfmtdlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUMP_GEN_CHECK,OnBumpGen)
 
 	ON_BN_CLICKED(IDC_MAT_COL_CHECK,OnMatCol)
+	ON_BN_CLICKED(IDC_MAT_DIFFUSE_CHECK,OnMatQuantizeDiffuse)
+	ON_BN_CLICKED(IDC_MAT_SHININESS_CHECK,OnMatQuantizeShininess)
 	ON_EN_KILLFOCUS(IDC_MAT_SHININESS_EDIT,OnShininessEdit)
 
 	ON_BN_CLICKED(IDC_MAT_TEX_CHECK,OnMatTex)
@@ -342,6 +353,28 @@ void vertexfmtdlg::OnMatCol()
 	EnableMatCol();
 }
 
+void vertexfmtdlg::OnMatQuantizeDiffuse()
+{
+	UpdateData();
+	af3d::materialcol<> c=m_Mat.getcol();
+	af3d::quantize_static_3<> q=c.getdiffusequantize();
+	q.setempty(m_nQuantizeMatDiffuseCheck==0?true:false);
+	c.setdiffusequantize(q);
+	m_Mat.setcol(c);
+	EnableMatCol();
+}
+
+void vertexfmtdlg::OnMatQuantizeShininess()
+{
+	UpdateData();
+	af3d::materialcol<> c=m_Mat.getcol();
+	af3d::quantize_static_3<> q=c.getspecularquantize();
+	q.setempty(m_nQuantizeMatShininessCheck==0?true:false);
+	c.setspecularquantize(q);
+	m_Mat.setcol(c);
+	EnableMatCol();
+}
+
 void vertexfmtdlg::OnMatTex()
 {
 	UpdateData();
@@ -459,6 +492,8 @@ void vertexfmtdlg::EnableMatCol()
 	GetDlgItem(IDC_MAT_SPECULAR)->EnableWindow(bMat);
 	GetDlgItem(IDC_MAT_SHININESS)->EnableWindow(bMat);
 	GetDlgItem(IDC_MAT_SHININESS_EDIT)->EnableWindow(bMat);
+	GetDlgItem(IDC_MAT_DIFFUSE_CHECK)->EnableWindow(bMat);
+	GetDlgItem(IDC_MAT_SHININESS_CHECK)->EnableWindow(bMat);
 }
 
 void vertexfmtdlg::EnableMatTex()

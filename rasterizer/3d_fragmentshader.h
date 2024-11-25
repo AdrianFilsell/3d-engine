@@ -70,7 +70,7 @@ public:
 				nPreMaterialInclusiveTo=nFaces-1;
 			if(nPreMaterialInclusiveTo-nFace+1)
 			{
-				renderfaces<0>(pSched,pMesh,lm,pCamera,pTransformed,nFace,nPreMaterialInclusiveTo,nullptr,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+				renderfaces<0,false>(pSched,pMesh,lm,pCamera,pTransformed,nFace,nPreMaterialInclusiveTo,nullptr,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 				nFace=nPreMaterialInclusiveTo+1;
 			}
 			else
@@ -81,7 +81,10 @@ public:
 					nMatMaterialInclusiveTo=nFaces-1;
 				if(nMatMaterialInclusiveTo-nFace+1 && pMaterial->getatts(true))
 				{
-					mat_renderfaces(pSched,pMesh,lm,pCamera,pTransformed,nFace,nMatMaterialInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+					if(pMaterial->getcol().getquantize())
+						mat_renderfaces<true>(pSched,pMesh,lm,pCamera,pTransformed,nFace,nMatMaterialInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+					else
+						mat_renderfaces<false>(pSched,pMesh,lm,pCamera,pTransformed,nFace,nMatMaterialInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 					nFace=nMatMaterialInclusiveTo+1;
 				}
 				++nMaterial;
@@ -154,7 +157,7 @@ protected:
 		gbuffer<t_flt> *m_pGBuffer;
 		afdib::dib *m_pDeviceDib;
 	};
-	template <int MAT> class fragop
+	template <int MAT,bool QUANTIZE> class fragop
 	{
 	public:
 		fragop(const mesh<KNL::template t_vs_types::template t_base_types::template t_fb> *pMesh,
@@ -177,7 +180,7 @@ protected:
 				{
 					case face_pos3_xform<t_flt>::cpt_outside:break;
 					case face_pos3_xform<t_flt>::cpt_inside:
-						renderface<MAT>(pFaces[nRangeFace],f,m_lm,worldcampos,m_pMaterial,m_rDstNDC,m_rDeviceClip,m_BufOffset,m_pZBuffer,m_pGBuffer);
+						renderface<MAT,QUANTIZE>(pFaces[nRangeFace],f,m_lm,worldcampos,m_pMaterial,m_rDstNDC,m_rDeviceClip,m_BufOffset,m_pZBuffer,m_pGBuffer);
 					break;
 					case face_pos3_xform<t_flt>::cpt_unknown:
 					{
@@ -188,7 +191,7 @@ protected:
 							const KNL::template t_vs_types::template t_base_types::template t_xform_maxvertexbuffer_triangulated *pTriangulated=scratch.gettriangulated();
 							const int nFaces=static_cast<int>(pTriangulated->size());
 							for(int nFace=0;nFace<nFaces;++nFace)
-								renderface<MAT>(pFaces[nRangeFace],pTriangulated->get()[nFace],m_lm,worldcampos,m_pMaterial,m_rDstNDC,m_rDeviceClip,m_BufOffset,m_pZBuffer,m_pGBuffer);
+								renderface<MAT,QUANTIZE>(pFaces[nRangeFace],pTriangulated->get()[nFace],m_lm,worldcampos,m_pMaterial,m_rDstNDC,m_rDeviceClip,m_BufOffset,m_pZBuffer,m_pGBuffer);
 							continue;
 						}
 					}
@@ -208,19 +211,20 @@ protected:
 		zbuffer<t_flt> *m_pZBuffer;
 		gbuffer<t_flt> *m_pGBuffer;
 	};
-	template <int MAT> static void renderfaces(const afthread::taskscheduler *pSched,
-											   const mesh<KNL::template t_vs_types::template t_base_types::template t_fb> *pMesh,
-											   const lightcache<t_flt>& lm,const camera<t_flt> *pCamera,
-											   const face_xform_union<t_flt> *pTransformed,const int nFrom,const int nInclusiveTo,
-											   const material<t_flt> *pMaterial,
-											   const crect<t_flt>& rDstNDC,const rect& rDstNDCClip,const vec2<int>& dstNDCtobuf,
-											   zbuffer<t_flt> *pZBuffer,gbuffer<t_flt> *pGBuffer)
+	template <int MAT,bool QUANTIZE> static void renderfaces(const afthread::taskscheduler *pSched,
+															 const mesh<KNL::template t_vs_types::template t_base_types::template t_fb> *pMesh,
+															 const lightcache<t_flt>& lm,const camera<t_flt> *pCamera,
+															 const face_xform_union<t_flt> *pTransformed,const int nFrom,const int nInclusiveTo,
+															 const material<t_flt> *pMaterial,
+															 const crect<t_flt>& rDstNDC,const rect& rDstNDCClip,const vec2<int>& dstNDCtobuf,
+															 zbuffer<t_flt> *pZBuffer,gbuffer<t_flt> *pGBuffer)
 	{
 		if(pSched)
-			pSched->parallel_for(nFrom,(nInclusiveTo-nFrom+1),pSched->getcores(),fragop<MAT>(pMesh,lm,pCamera,pTransformed,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer));
+			pSched->parallel_for(nFrom,(nInclusiveTo-nFrom+1),pSched->getcores(),fragop<MAT,QUANTIZE>(pMesh,lm,pCamera,pTransformed,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer));
 		else
-			fragop<MAT>(pMesh,lm,pCamera,pTransformed,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer)(nFrom,nFrom+(nInclusiveTo-nFrom+1)-1,nullptr);
+			fragop<MAT,QUANTIZE>(pMesh,lm,pCamera,pTransformed,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer)(nFrom,nFrom+(nInclusiveTo-nFrom+1)-1,nullptr);
 	}
+	template <bool QUANTIZE>
 	static void mat_renderfaces(const afthread::taskscheduler *pSched,
 								const mesh<KNL::template t_vs_types::template t_base_types::template t_fb> *pMesh,
 								const lightcache<t_flt>& lm,const camera<t_flt> *pCamera,
@@ -235,16 +239,16 @@ protected:
 				switch(pMaterial->getatts(true))
 				{
 					case face_vertex_att::t_col:
-						renderfaces<face_vertex_att::t_col>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_col,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 					case face_vertex_att::t_tex:
-						renderfaces<face_vertex_att::t_tex>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_tex,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 					case face_vertex_att::t_bump:
-						renderfaces<face_vertex_att::t_bump>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_bump,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 					case face_vertex_att::t_env_cubic:
-						renderfaces<face_vertex_att::t_env_cubic>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_env_cubic,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 					default:break;
 				}
@@ -253,24 +257,24 @@ protected:
 				switch(pMaterial->getatts(true))
 				{
 					case face_vertex_att::t_bump|face_vertex_att::t_env_cubic:
-						renderfaces<face_vertex_att::t_bump|face_vertex_att::t_env_cubic>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_bump|face_vertex_att::t_env_cubic,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 					case face_vertex_att::t_tex|face_vertex_att::t_bump:
-						renderfaces<face_vertex_att::t_tex|face_vertex_att::t_bump>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_tex|face_vertex_att::t_bump,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 					case face_vertex_att::t_tex|face_vertex_att::t_env_cubic:
-						renderfaces<face_vertex_att::t_tex|face_vertex_att::t_env_cubic>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_tex|face_vertex_att::t_env_cubic,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 
 					case face_vertex_att::t_col|face_vertex_att::t_env_cubic:
-						renderfaces<face_vertex_att::t_col|face_vertex_att::t_env_cubic>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_col|face_vertex_att::t_env_cubic,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 					case face_vertex_att::t_col|face_vertex_att::t_bump:
-						renderfaces<face_vertex_att::t_col|face_vertex_att::t_bump>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_col|face_vertex_att::t_bump,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 
 					case face_vertex_att::t_col|face_vertex_att::t_tex:
-						renderfaces<face_vertex_att::t_col|face_vertex_att::t_tex>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_col|face_vertex_att::t_tex,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 
 					default:break;
@@ -280,15 +284,15 @@ protected:
 				switch(pMaterial->getatts(true))
 				{
 					case face_vertex_att::t_col|face_vertex_att::t_bump|face_vertex_att::t_env_cubic:
-						renderfaces<face_vertex_att::t_col|face_vertex_att::t_bump|face_vertex_att::t_env_cubic>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_col|face_vertex_att::t_bump|face_vertex_att::t_env_cubic,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 
 					case face_vertex_att::t_col|face_vertex_att::t_tex|face_vertex_att::t_bump:
-						renderfaces<face_vertex_att::t_col|face_vertex_att::t_tex|face_vertex_att::t_bump>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_col|face_vertex_att::t_tex|face_vertex_att::t_bump,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 					
 					case face_vertex_att::t_col|face_vertex_att::t_tex|face_vertex_att::t_env_cubic:
-						renderfaces<face_vertex_att::t_col|face_vertex_att::t_tex|face_vertex_att::t_env_cubic>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+						renderfaces<face_vertex_att::t_col|face_vertex_att::t_tex|face_vertex_att::t_env_cubic,QUANTIZE>(pSched,pMesh,lm,pCamera,pTransformed,nFrom,nInclusiveTo,pMaterial,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
 						return;
 
 					default:break;
@@ -340,10 +344,10 @@ protected:
 
 		return true;
 	}
-	template <int MAT> __forceinline static void renderface(const KNL::template t_vs_types::template t_base_types::template t_face& src,const KNL::template t_vs_types::template t_base_types::template t_xform_face& xformed,
-																		 const lightcache<t_flt>& lm,const vec3<t_flt>& worldcampos,
-																		 const material<t_flt> *pMaterial,const crect<t_flt>& rDstNDC,const rect& rDstNDCClip,const vec2<int>& dstNDCtobuf,
-																		 zbuffer<t_flt> *pZBuffer,gbuffer<t_flt> *pGBuffer)
+	template <int MAT,bool QUANTIZE> __forceinline static void renderface(const KNL::template t_vs_types::template t_base_types::template t_face& src,const KNL::template t_vs_types::template t_base_types::template t_xform_face& xformed,
+																		  const lightcache<t_flt>& lm,const vec3<t_flt>& worldcampos,
+																		  const material<t_flt> *pMaterial,const crect<t_flt>& rDstNDC,const rect& rDstNDCClip,const vec2<int>& dstNDCtobuf,
+																		  zbuffer<t_flt> *pZBuffer,gbuffer<t_flt> *pGBuffer)
 	{
 		const t_flt epsilon = std::numeric_limits<t_flt>::epsilon();
 
@@ -359,12 +363,21 @@ protected:
 			for(int n=0;n<3;++n)
 				ndc[n]=ndcsrc.getpos()[n].getdehomogenise();
 		#endif
-
+		
 		vec3<t_flt> dstNDCspace[3];
 		const face_pos_vertex_data<vec4<t_flt>>& clipspacepos = xformed.getclippos();
-		clipspacepos.getpos()[0].getdevice(rDstNDC,dstNDCspace[0]);
-		clipspacepos.getpos()[1].getdevice(rDstNDC,dstNDCspace[1]);
-		clipspacepos.getpos()[2].getdevice(rDstNDC,dstNDCspace[2]);
+		if(KNL::getreverse())
+		{
+			clipspacepos.getpos()[0].getdevice(rDstNDC,dstNDCspace[2]);
+			clipspacepos.getpos()[1].getdevice(rDstNDC,dstNDCspace[1]);
+			clipspacepos.getpos()[2].getdevice(rDstNDC,dstNDCspace[0]);
+		}
+		else
+		{
+			clipspacepos.getpos()[0].getdevice(rDstNDC,dstNDCspace[0]);
+			clipspacepos.getpos()[1].getdevice(rDstNDC,dstNDCspace[1]);
+			clipspacepos.getpos()[2].getdevice(rDstNDC,dstNDCspace[2]);
+		}
 
 		rect rDiscrete;
 		crect<t_flt>::postodiscrete(dstNDCspace,3,rDiscrete);
@@ -398,13 +411,15 @@ protected:
 		const t_flt v0_y_minus_v2_y=dstNDCspace[0][1]-dstNDCspace[2][1];
 		const t_flt v0_x_minus_v2_x=dstNDCspace[0][0]-dstNDCspace[2][0];
 		
-		const KNL::fragment<MAT> knlfrag;
+		const KNL::fragment<MAT,QUANTIZE> knlfrag;
 		KNL::template t_vs_types::template t_base_types::template t_xform_face::template vertex frag;
 		const int nGWidth=pGBuffer?pGBuffer->getwidth():0;
 		gvertex<t_flt> *pScanlineG=pGBuffer?pGBuffer->getscanline(rDiscrete.get(rect::v_tl)[1]+dstNDCtobuf[1]):nullptr;
 		const int nZBWidth=pZBuffer->getwidth();
 		zvertex<t_flt> *pScanlineZB=pZBuffer->getscanline(rDiscrete.get(rect::v_tl)[1]+dstNDCtobuf[1]);
-		const t_flt dstclipspaceWrecip[3]={1.0/clipspacepos.getpos()[0][3],1.0/clipspacepos.getpos()[1][3],1.0/clipspacepos.getpos()[2][3]};
+		const t_flt dstclipspaceWrecip[3]={KNL::getreverse() ? 1.0/clipspacepos.getpos()[2][3] : 1.0/clipspacepos.getpos()[0][3],
+										   1.0/clipspacepos.getpos()[1][3],
+										   KNL::getreverse() ? 1.0/clipspacepos.getpos()[0][3] : 1.0/clipspacepos.getpos()[2][3]};
 		for(int nDstY=rDiscrete.get(rect::v_tl)[1];nDstY<rDiscrete.get(rect::v_br)[1];++nDstY,pScanlineG+=nGWidth,pScanlineZB+=nZBWidth)
 		{
 			for(int nDstX=rDiscrete.get(rect::v_tl)[0];nDstX<rDiscrete.get(rect::v_br)[0];++nDstX)
@@ -424,14 +439,13 @@ protected:
 				// barycentric
 				vec3<t_flt> alpha_beta_gamma;
 				#if (RAS_PARADIGM==RAS_DX_PARADIGM)
-					alpha_beta_gamma[0]=edges_01_12_20[1]/-dTotalArea;
-					alpha_beta_gamma[1]=edges_01_12_20[2]/-dTotalArea;
-					alpha_beta_gamma[2]=edges_01_12_20[0]/-dTotalArea;
-				#elif (RAS_PARADIGM==RAS_OGL_PARADIGM)
-					alpha_beta_gamma[0]=edges_01_12_20[1]/dTotalArea;
-					alpha_beta_gamma[1]=edges_01_12_20[2]/dTotalArea;
-					alpha_beta_gamma[2]=edges_01_12_20[0]/dTotalArea;
+					const t_flt dDivisor = -dTotalArea;
+				#else
+					const t_flt dDivisor = dTotalArea;
 				#endif
+				alpha_beta_gamma[0]=edges_01_12_20[1]/dDivisor;
+				alpha_beta_gamma[1]=edges_01_12_20[2]/dDivisor;
+				alpha_beta_gamma[2]=edges_01_12_20[0]/dDivisor;
 				#ifdef _DEBUG
 					const t_flt dBarySum=alpha_beta_gamma[0]+alpha_beta_gamma[1]+alpha_beta_gamma[2];
 				#endif
@@ -450,7 +464,8 @@ protected:
 				pScanlineZB[nBuffDstX].acquire();
 				if(dZ < pScanlineZB[nBuffDstX].get())			// actual check
 				{
-					pScanlineZB[nBuffDstX].set(dZ);
+					if(KNL::getwritezbuffer())
+						pScanlineZB[nBuffDstX].set(dZ);
 				}
 				else
 				{
@@ -463,9 +478,9 @@ protected:
 					pScanlineZB[nBuffDstX].release();
 					continue;
 				}
-								
+				
 				// interpolate atts
-				frag.barylerp(xformed,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+				frag.barylerp<KNL::getreverse()>(xformed,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 
 				// render fragment
 				knlfrag.render<KNL::template t_vs_types::template t_base_types::template t_face>(lm,worldcampos,pScanlineG[nBuffDstX].getfrag(),src,xformed,frag,dZ,pMaterial);
@@ -478,13 +493,57 @@ protected:
 	}
 };
 
-template <typename VST> class fragmentshaderknl
+template <typename KNL> class silhouette_fragmentshader : public fragmentshader<KNL>
+{
+public:
+	static void render(const afthread::taskscheduler *pSched,
+					   const vertexattsframe<t_flt> *pFrame,
+					   const camera<t_flt> *pCamera,
+					   const crect<t_flt>& rDstNDC,const rect& rDstNDCClip,const vec2<int>& dstNDCtobuf,
+					   const vertexshaderscratch<t_flt> *pVSScratch,
+					   zbuffer<t_flt> *pZBuffer,gbuffer<t_flt> *pGBuffer)
+	{
+		if(!pFrame||!pVSScratch||rDstNDCClip.isempty()) return;
+
+		const bool bZBuffer=!(!pZBuffer||(pZBuffer->getwidth()<rDstNDCClip.get(rect::v_br)[0]+dstNDCtobuf[0])||(pZBuffer->getheight()<rDstNDCClip.get(rect::v_br)[1]+dstNDCtobuf[1]));
+		if(!bZBuffer)
+			return;
+
+		const bool bGBuffer=!(!pGBuffer||(pGBuffer->getwidth()<rDstNDCClip.get(rect::v_br)[0]+dstNDCtobuf[0])||(pGBuffer->getheight()<rDstNDCClip.get(rect::v_br)[1]+dstNDCtobuf[1]));
+		if(pGBuffer)
+		{
+			if(!bGBuffer)
+				return;
+		}
+
+		const std::vector<face_xform_union<t_flt>>& vTransformed = pVSScratch->getxformed()->get();
+		const face_xform_union<t_flt> *pTransformed=&(vTransformed[0]);
+		const int nFaces=static_cast<int>(vTransformed.size());
+		
+		const mesh<KNL::template t_vs_types::template t_base_types::template t_fb> *pMesh=static_cast<const mesh<KNL::template t_vs_types::template t_base_types::template t_fb>*>(pFrame);
+		
+		materialcol<t_flt> col({0,0,0},{0,0,0},{0,0,0},0);
+		material<t_flt> mat(0,nFaces);
+		mat.setcol(col);
+		mat.enable(face_vertex_att::t_col,true);
+
+		mat_renderfaces<false>(pSched,pMesh,{nullptr},pCamera,pTransformed,0,nFaces,&mat,rDstNDC,rDstNDCClip,dstNDCtobuf,pZBuffer,pGBuffer);
+	}
+};
+
+enum knlflagtype{ft_lit=0x1,ft_reverse=0x2,ft_writezbuffer=0x4};
+
+template <typename VST,int FLAGS> class fragmentshaderknl
 {
 public:
 	using t_vs_types=VST;
 	using t_flt=VST::template t_base_types::template t_flt;
 
-	template <int MAT> class fragment
+	__forceinline static constexpr bool getlit(void){return FLAGS&ft_lit?true:false;}
+	__forceinline static constexpr bool getreverse(void){return FLAGS&ft_reverse?true:false;}
+	__forceinline static constexpr bool getwritezbuffer(void){return FLAGS&ft_writezbuffer?true:false;}
+
+	template <int MAT,bool QUANTIZE> class fragment
 	{
 	public:
 		template <typename F> __forceinline void render(const lightcache<t_flt>& lm,const vec3<t_flt>& campos,
@@ -702,6 +761,10 @@ public:
 
 			constexpr bool bVertexCol=(VERTEX & face_vertex_att::t_col)?true:false;
 
+			const quantize_static_3<t_flt> quantizeNull;
+			const quantize_static_3<t_flt>& diffuseQuantize=(QUANTIZE && bVertexNorm)?pMaterial->getcol().getdiffusequantize():quantizeNull;
+			const quantize_static_3<t_flt>& specularQuantize=(QUANTIZE && bVertexNorm)?pMaterial->getcol().getspecularquantize():quantizeNull;
+			
 			vec3<t_flt> tmp;
 			switch(MAT)
 			{
@@ -916,16 +979,17 @@ public:
 				break;
 			}
 
-			if(bVertexNorm)
-				lm.modulate(campos,
-							worldpos,
-							bVertexBump?bumpworldnorm:worldnorm,
-							dNDCspaceZ,
-							dst,
-							(MAT & face_vertex_att::t_col) ? pMaterial->getcol().getambient() : materialcol<t_flt>::getdefambient(),
-							(MAT & face_vertex_att::t_col) ? pMaterial->getcol().getspecular() : materialcol<t_flt>::getdefspecular(),
-							(MAT & face_vertex_att::t_col) ? pMaterial->getcol().getshininess() : materialcol<t_flt>::getdefshininess(),
-							dst);
+			if(bVertexNorm && getlit())
+				lm.modulate<QUANTIZE>(campos,
+									  worldpos,
+									  bVertexBump?bumpworldnorm:worldnorm,
+									  dNDCspaceZ,
+									  dst,
+									  (MAT & face_vertex_att::t_col) ? pMaterial->getcol().getambient() : materialcol<t_flt>::getdefambient(),
+									  (MAT & face_vertex_att::t_col) ? pMaterial->getcol().getspecular() : materialcol<t_flt>::getdefspecular(),
+									  (MAT & face_vertex_att::t_col) ? pMaterial->getcol().getshininess() : materialcol<t_flt>::getdefshininess(),
+									  diffuseQuantize,specularQuantize,
+									  dst);
 		}
 		template <typename LERP> __forceinline void lerp(const vec3<t_flt>& a,const vec3<t_flt>& b,const vec3<t_flt>& c,const vec3<t_flt>& d,LERP& o)const
 		{

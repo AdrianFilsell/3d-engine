@@ -40,8 +40,11 @@ public:
 	int m_nMatBumpCheck;
 	CString m_csBump;
 	int m_nMatColCheck;
+	int m_nQuantizeMatDiffuseCheck;
 	CString m_csMatShininess;
+	int m_nQuantizeMatShininessCheck;
 	int m_nOpacity;
+	int m_nEffectCombo;
 	
 	colourwnd m_ColWnd;
 	colourwnd m_MatDiffuseColWnd;
@@ -66,7 +69,13 @@ public:
 		if(m_nNormCheck)nVertexAtts|=af3d::face_vertex_att::t_norm;
 		if(m_nBumpCheck)nVertexAtts|=af3d::face_vertex_att::t_bump;
 
-		return {nVertexAtts,c,n,tex,bump,m_Mat,m_nOpacity/100.0};
+		af3d::vertexattsframe<>::template effecttype e=af3d::vertexattsframe<>::et_null;
+		switch(m_nEffectCombo)
+		{
+			case 1:e=af3d::vertexattsframe<>::et_silhouette;break;
+		}
+
+		return {nVertexAtts,c,n,tex,bump,m_Mat,m_nOpacity/100.0,e};
 	}
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -89,6 +98,8 @@ protected:
 
 	afx_msg void OnMatCol();
 	afx_msg void OnShininessEdit();
+	afx_msg void OnMatQuantizeDiffuse();
+	afx_msg void OnMatQuantizeShininess();
 
 	afx_msg void OnMatTex();
 	afx_msg void OnMatTexBtn();

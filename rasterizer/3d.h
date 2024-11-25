@@ -62,6 +62,27 @@ template <typename T=RAS_FLTTYPE> __forceinline T getfwd(void)
 	#endif
 }
 
+template <typename T=RAS_FLTTYPE> class quantize_static_3
+{
+// this is a simple 3 threshold quantize class but could be expanded to hold any number of thresholds and threshold values
+// for quantizing diffuse colour/specular highlight between 2 - 5 ( 3 is fine )
+public:
+	using t_flt=T;
+
+	quantize_static_3(){m_bEmpty=true;}
+	~quantize_static_3(){}
+	__forceinline bool isempty(void)const{return m_bEmpty;}
+	__forceinline void setempty(const bool b){m_bEmpty=b;}
+	__forceinline T quantize(const T d)const
+	{
+		if(d<0.5)return 0;
+		if(d<1.0)return 0.5;
+		return 1.0;
+	}
+protected:
+	bool m_bEmpty;
+};
+
 template <typename T=RAS_FLTTYPE> class vec2
 {
 public:
@@ -71,11 +92,12 @@ public:
 	vec2(const T x,const T y){m_v[0]=x;m_v[1]=y;}
 	vec2(const vec2& o){*this=o;}
 	__forceinline void lerp(const vec2& from,const vec2& to,const t_flt t){m_v[0]=from[0]+(to[0]-from[0])*t;m_v[1]=from[1]+(to[1]-from[1])*t;}
-	__forceinline void barylerp(const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp,const vec2<T>& a,const vec2<T>& b,const vec2<T>& c)
+	template <bool REVERSE> __forceinline void barylerp(const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp,const vec2<T>& a,const vec2<T>& b,const vec2<T>& c)
 	{
-		m_v[0] = (a[0]*dAlphaWa + b[0]*dBetaWb + c[0]*dGammaWc)*dRecipWp;
-		m_v[1] = (a[1]*dAlphaWa + b[1]*dBetaWb + c[1]*dGammaWc)*dRecipWp;
+		m_v[REVERSE?1:0] = (a[0]*dAlphaWa + b[0]*dBetaWb + c[0]*dGammaWc)*dRecipWp;
+		m_v[REVERSE?0:1] = (a[1]*dAlphaWa + b[1]*dBetaWb + c[1]*dGammaWc)*dRecipWp;
 	}
+	__forceinline void negate(void){m_v[0]=-m_v[0];m_v[1]=-m_v[1];}
 	__forceinline T dot(const vec2& o)const{return (m_v[0]*o.m_v[0]+m_v[1]*o.m_v[1]);}
 	__forceinline RAS_FLTTYPE getlengthsq(void)const{const RAS_FLTTYPE d = m_v[0]*m_v[0]+m_v[1]*m_v[1];return d;}
 	__forceinline RAS_FLTTYPE getlength(void)const{const RAS_FLTTYPE d=getlengthsq();return d?sqrt(d):0;}
@@ -311,12 +333,13 @@ public:
 	vec3(const T x,const T y,const T z){m_v[0]=x;m_v[1]=y;m_v[2]=z;}
 	vec3(const vec3& o){*this=o;}
 	__forceinline void lerp(const vec3& from,const vec3& to,const t_flt t){m_v[0]=from[0]+(to[0]-from[0])*t;m_v[1]=from[1]+(to[1]-from[1])*t;m_v[2]=from[2]+(to[2]-from[2])*t;}
-	__forceinline void barylerp(const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp,const vec3<T>& a,const vec3<T>& b,const vec3<T>& c)
+	template <bool REVERSE> __forceinline void barylerp(const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp,const vec3<T>& a,const vec3<T>& b,const vec3<T>& c)
 	{
-		m_v[0] = (a[0]*dAlphaWa + b[0]*dBetaWb + c[0]*dGammaWc)*dRecipWp;
+		m_v[REVERSE?2:0] = (a[0]*dAlphaWa + b[0]*dBetaWb + c[0]*dGammaWc)*dRecipWp;
 		m_v[1] = (a[1]*dAlphaWa + b[1]*dBetaWb + c[1]*dGammaWc)*dRecipWp;
-		m_v[2] = (a[2]*dAlphaWa + b[2]*dBetaWb + c[2]*dGammaWc)*dRecipWp;
+		m_v[REVERSE?0:2] = (a[2]*dAlphaWa + b[2]*dBetaWb + c[2]*dGammaWc)*dRecipWp;
 	}
+	__forceinline void negate(void){m_v[0]=-m_v[0];m_v[1]=-m_v[1];m_v[2]=-m_v[2];}
 	__forceinline T getlengthsq(void)const{return (m_v[0]*m_v[0]+m_v[1]*m_v[1]+m_v[2]*m_v[2]);}
 	__forceinline T getlength(void)const{const T d=getlengthsq();return d?sqrt(d):0;}
 	__forceinline vec3 normalized(void)const{const T dL=getlength();if(dL)return (*this)*(1.0/dL); return *this;}
@@ -377,13 +400,14 @@ public:
 		#endif
 	}
 	__forceinline void lerp(const vec4& from,const vec4& to,const t_flt t){m_v[0]=from[0]+(to[0]-from[0])*t;m_v[1]=from[1]+(to[1]-from[1])*t;m_v[2]=from[2]+(to[2]-from[2])*t;m_v[3]=from[3]+(to[3]-from[3])*t;}
-	__forceinline void barylerp(const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp,const vec4<T>& a,const vec4<T>& b,const vec4<T>& c)
+	template <bool REVERSE> __forceinline void barylerp(const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp,const vec4<T>& a,const vec4<T>& b,const vec4<T>& c)
 	{
-		m_v[0] = (a[0]*dAlphaWa + b[0]*dBetaWb + c[0]*dGammaWc)*dRecipWp;
-		m_v[1] = (a[1]*dAlphaWa + b[1]*dBetaWb + c[1]*dGammaWc)*dRecipWp;
-		m_v[2] = (a[2]*dAlphaWa + b[2]*dBetaWb + c[2]*dGammaWc)*dRecipWp;
-		m_v[3] = (a[3]*dAlphaWa + b[3]*dBetaWb + c[3]*dGammaWc)*dRecipWp;
+		m_v[REVERSE?3:0] = (a[0]*dAlphaWa + b[0]*dBetaWb + c[0]*dGammaWc)*dRecipWp;
+		m_v[REVERSE?2:1] = (a[1]*dAlphaWa + b[1]*dBetaWb + c[1]*dGammaWc)*dRecipWp;
+		m_v[REVERSE?1:2] = (a[2]*dAlphaWa + b[2]*dBetaWb + c[2]*dGammaWc)*dRecipWp;
+		m_v[REVERSE?0:3] = (a[3]*dAlphaWa + b[3]*dBetaWb + c[3]*dGammaWc)*dRecipWp;
 	}
+	__forceinline void negate(void){m_v[0]=-m_v[0];m_v[1]=-m_v[1];m_v[2]=-m_v[2];m_v[3]=-m_v[3];}
 	__forceinline void dehomogenise(void){if(m_v[3]){const T d=1.0/m_v[3];m_v[0]*=d;m_v[1]*=d;m_v[2]*=d;m_v[3]=1.0;}}
 	__forceinline T operator[](const size_t n)const{return m_v[n];}
 	__forceinline T& operator[](const size_t n){return m_v[n];}

@@ -14,9 +14,10 @@ template <typename T=RAS_FLTTYPE> class objcfg
 {
 public:
 	objcfg(const objcfg& o){*this=o;}
-	objcfg(const int nVertexAtts,const std::pair<bool,vec3<T>>& c, const face_norm_vertex_data<T>::template type n, const face_tex_vertex_data<T>::template type tex, const face_tex_vertex_data<T>::template type bump,const material<T>& mat,const T dOpacity):m_nVertexAtts(nVertexAtts),m_dOpacity(dOpacity),m_Mat(mat),m_FaceColour(c),m_FaceNormal(n),m_FaceTexUV(tex),m_FaceBumpUV(bump){}
+	objcfg(const int nVertexAtts,const std::pair<bool,vec3<T>>& c, const face_norm_vertex_data<T>::template type n, const face_tex_vertex_data<T>::template type tex, const face_tex_vertex_data<T>::template type bump,const material<T>& mat,const T dOpacity, const vertexattsframe<T>::template effecttype e):m_nVertexAtts(nVertexAtts),m_dOpacity(dOpacity),m_Mat(mat),m_FaceColour(c),m_FaceNormal(n),m_FaceTexUV(tex),m_FaceBumpUV(bump),m_Effect(e){}
 
 	T getopacity(void)const{return m_dOpacity;}
+	vertexattsframe<T>::template effecttype geteffect(void)const{return m_Effect;}
 	const material<T>& getmat(void)const{return m_Mat;}
 	const std::pair<bool,vec3<T>>& getfacecolour(void)const{return m_FaceColour;}
 	face_norm_vertex_data<T>::template type getfacenormal(void)const{return m_FaceNormal;}
@@ -33,6 +34,7 @@ public:
 		m_FaceTexUV=o.m_FaceTexUV;
 		m_FaceBumpUV=o.m_FaceBumpUV;
 		m_nVertexAtts=o.m_nVertexAtts;
+		m_Effect=o.m_Effect;
 		return *this;
 	}
 protected:
@@ -42,6 +44,7 @@ protected:
 	face_tex_vertex_data<T>::template type m_FaceBumpUV;
 	material<T> m_Mat;
 	T m_dOpacity;
+	vertexattsframe<T>::template effecttype m_Effect;
 	int m_nVertexAtts;
 };
 

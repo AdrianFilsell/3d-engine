@@ -67,7 +67,7 @@ public:
 		face_pos_vertex_data<vec4<T>>::template vertex clippos;
 		__forceinline void set(const face_pos3_xform& src,const size_t n){clippos.set(src.getclippos(),n);}
 		__forceinline void lerp(const face_pos3_xform&src,const vertex& from,const vertex& to,const T t){clippos.lerp(src.getclippos(),from.clippos,to.clippos,t);}
-		__forceinline void barylerp(const face_pos3_xform&src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){}
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_xform&src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){}
 	};
 
 	face_pos3_xform():m_ClipPosType(cpt_unknown){}
@@ -86,7 +86,7 @@ public:
 	}
 	__forceinline const face_pos_vertex_data<vec4<T>>& getclippos(void)const{return m_ClipPos;}
 	__forceinline face_pos_vertex_data<vec4<T>>& getclippos(void){return m_ClipPos;}
-	__forceinline static bool xform_normal(void){return false;}
+	__forceinline static constexpr bool xform_normal(void){return false;}
 	__forceinline void set(const face_pos3_xform& src,const vertex& a,const vertex& b,const vertex& c){m_ClipPos.set(src.m_ClipPos,a.clippos,b.clippos,c.clippos);}
 	__forceinline static int size(void){return face_pos_vertex_data<vec4<T>>::size();}
 protected:
@@ -123,7 +123,7 @@ public:
 		face_col_vertex_data<T>::template vertex col;
 		__forceinline void set(const face_col_xform& src,const size_t n){col.set(src.getcol(),n);}
 		__forceinline void lerp(const face_col_xform& src,const vertex& from,const vertex& to,const T t){col.lerp(src.getcol(),from.col,to.col,t);}
-		__forceinline void barylerp(const face_col_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){col.barylerp(src.getcol(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
+		template <bool REVERSE> __forceinline void barylerp(const face_col_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){col.barylerp<REVERSE>(src.getcol(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
 	};
 
 	face_col_xform(){}
@@ -157,7 +157,7 @@ public:
 		face_tex_vertex_data<T>::template vertex tex;
 		__forceinline void set(const face_tex_xform& src,const size_t n){tex.set(src.gettex(),n);}
 		__forceinline void lerp(const face_tex_xform& src,const vertex& from,const vertex& to,const T t){tex.lerp(src.gettex(),from.tex,to.tex,t);}
-		__forceinline void barylerp(const face_tex_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){tex.barylerp(src.gettex(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
+		template <bool REVERSE> __forceinline void barylerp(const face_tex_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){tex.barylerp<REVERSE>(src.gettex(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
 	};
 
 	face_tex_xform(){}
@@ -191,7 +191,7 @@ public:
 		face_bump_vertex_data<T>::template vertex bump;
 		__forceinline void set(const face_bump_xform& src,const size_t n){bump.set(src.getbump(),n);}
 		__forceinline void lerp(const face_bump_xform& src,const vertex& from,const vertex& to,const T t){bump.lerp(src.getbump(),from.bump,to.bump,t);}
-		__forceinline void barylerp(const face_bump_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){bump.barylerp(src.getbump(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
+		template <bool REVERSE> __forceinline void barylerp(const face_bump_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){bump.barylerp<REVERSE>(src.getbump(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
 	};
 
 	face_bump_xform(){}
@@ -234,10 +234,10 @@ public:
 			worldnorm.lerp(src.getworldnorm(),from.worldnorm,to.worldnorm,t);
 			worldpos.lerp(src.getworldpos(),from.worldpos,to.worldpos,t);
 		}
-		__forceinline void barylerp(const face_norm_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_norm_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			worldnorm.barylerp(src.getworldnorm(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			worldpos.barylerp(src.getworldpos(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			worldnorm.barylerp<REVERSE>(src.getworldnorm(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			worldpos.barylerp<REVERSE>(src.getworldpos(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -292,10 +292,10 @@ public:
 			face_pos3_xform<T>::template vertex::lerp(src,from,to,t);
 			face_col_xform<T>::template vertex::lerp(src,from,to,t);
 		}
-		__forceinline void barylerp(const face_pos3_col_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_col_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			face_pos3_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			face_col_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_pos3_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_col_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -337,10 +337,10 @@ public:
 			face_pos3_xform<T>::template vertex::lerp(src,from,to,t);
 			face_tex_xform<T>::template vertex::lerp(src,from,to,t);
 		}
-		__forceinline void barylerp(const face_pos3_tex_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_tex_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			face_pos3_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			face_tex_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_pos3_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_tex_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -382,10 +382,10 @@ public:
 			face_pos3_xform<T>::template vertex::lerp(src,from,to,t);
 			face_norm_xform<T>::template vertex::lerp(src,from,to,t);
 		}
-		__forceinline void barylerp(const face_pos3_norm_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_norm_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			face_pos3_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			face_norm_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_pos3_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_norm_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -429,10 +429,10 @@ public:
 			face_pos3_norm_xform<T>::template vertex::lerp(src,from,to,t);
 			face_col_xform<T>::template vertex::lerp(src,from,to,t);
 		}
-		__forceinline void barylerp(const face_pos3_norm_col_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_norm_col_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			face_pos3_norm_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			face_col_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_pos3_norm_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_col_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -474,10 +474,10 @@ public:
 			face_pos3_norm_col_xform<T>::template vertex::lerp(src,from,to,t);
 			face_bump_xform<T>::template vertex::lerp(src,from,to,t);
 		}
-		__forceinline void barylerp(const face_pos3_norm_col_bump_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_norm_col_bump_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			face_pos3_norm_col_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			face_bump_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_pos3_norm_col_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_bump_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -519,10 +519,10 @@ public:
 			face_pos3_norm_xform<T>::template vertex::lerp(src,from,to,t);
 			face_tex_xform<T>::template vertex::lerp(src,from,to,t);
 		}
-		__forceinline void barylerp(const face_pos3_norm_tex_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_norm_tex_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			face_pos3_norm_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			face_tex_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_pos3_norm_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_tex_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -564,10 +564,10 @@ public:
 			face_pos3_norm_tex_xform<T>::template vertex::lerp(src,from,to,t);
 			face_bump_xform<T>::template vertex::lerp(src,from,to,t);
 		}
-		__forceinline void barylerp(const face_pos3_norm_tex_bump_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_norm_tex_bump_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			face_pos3_norm_tex_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			face_bump_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_pos3_norm_tex_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_bump_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -609,10 +609,10 @@ public:
 			face_pos3_norm_col_xform<T>::template vertex::lerp(src,from,to,t);
 			face_tex_xform<T>::template vertex::lerp(src,from,to,t);
 		}
-		__forceinline void barylerp(const face_pos3_norm_col_tex_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_norm_col_tex_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			face_pos3_norm_col_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			face_tex_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_pos3_norm_col_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_tex_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -654,10 +654,10 @@ public:
 			face_pos3_norm_col_tex_xform<T>::template vertex::lerp(src,from,to,t);
 			face_bump_xform<T>::template vertex::lerp(src,from,to,t);
 		}
-		__forceinline void barylerp(const face_pos3_norm_col_tex_bump_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_norm_col_tex_bump_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			face_pos3_norm_col_tex_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			face_bump_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_pos3_norm_col_tex_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_bump_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -699,10 +699,10 @@ public:
 			face_pos3_col_xform<T>::template vertex::lerp(src,from,to,t);
 			face_tex_xform<T>::template vertex::lerp(src,from,to,t);
 		}
-		__forceinline void barylerp(const face_pos3_col_tex_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_col_tex_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			face_pos3_col_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			face_tex_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_pos3_col_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_tex_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -744,10 +744,10 @@ public:
 			face_pos3_norm_xform<T>::template vertex::lerp(src,from,to,t);
 			face_bump_xform<T>::template vertex::lerp(src,from,to,t);
 		}
-		__forceinline void barylerp(const face_pos3_norm_bump_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_pos3_norm_bump_xform& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
-			face_pos3_norm_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
-			face_bump_xform<T>::template vertex::barylerp(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_pos3_norm_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+			face_bump_xform<T>::template vertex::barylerp<REVERSE>(src,dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -837,11 +837,11 @@ public:
 	__forceinline void push_back(const F& v){m_Faces.push_back(v);}
 	__forceinline std::vector<F>& get(void){return m_Faces;}
 	template <int EXTENTS,typename VST> static __forceinline void xform(const afthread::taskscheduler *pSched,
-															const mat4<t_flt>& modeltoworld,
-															const mat4<t_flt>& transposedinversemodeltoworld,
-															const mat4<t_flt>& modeltoclipspace,
-															const VST::template t_base_types::template t_fb *pB,
-															facebuffer<face_xform_union<t_flt>> *pC)
+																		const mat4<t_flt>& modeltoworld,
+																		const mat4<t_flt>& transposedinversemodeltoworld,
+																		const mat4<t_flt>& modeltoclipspace,
+																		const VST::template t_base_types::template t_fb *pB,
+																		facebuffer<face_xform_union<t_flt>> *pC)
 	{
 		if(pC->get().capacity()<pB->get().size())
 			pC->get().reserve(pB->m_Faces.size());

@@ -228,6 +228,8 @@ template <typename F> std::shared_ptr<af3d::vertexattsframe<>> CrasterizerDoc::i
 
 	spMesh->setopacity(cfg.getopacity());
 
+	spMesh->seteffect(cfg.geteffect());
+
 	spMesh->getparent()->push_back(spMesh);
 	spMesh->invalidatecompositebbox();
 	getscene()->cache_lights();
@@ -401,7 +403,7 @@ std::shared_ptr<af3d::vertexattsframe<>> CrasterizerDoc::createlight(const af3d:
 								 af3d::materialcol<>::getdefambient(),
 								 af3d::materialcol<>::getdefspecular(),
 								 dShininess));
-	const af3d::objcfg<> cfg(af3d::face_vertex_att::t_pos|af3d::face_vertex_att::t_norm,{false,{}},af3d::face_norm_vertex_data<>::t_geometric,af3d::face_tex_vertex_data<>::t_null,af3d::face_tex_vertex_data<>::t_null,m,1.0);
+	const af3d::objcfg<> cfg(af3d::face_vertex_att::t_pos|af3d::face_vertex_att::t_norm,{false,{}},af3d::face_norm_vertex_data<>::t_geometric,af3d::face_tex_vertex_data<>::t_null,af3d::face_tex_vertex_data<>::t_null,m,1.0,af3d::vertexattsframe<>::et_null);
 	
 	std::shared_ptr<FB> spVertexBuffer(new FB);
 	o.push_back(spVertexBuffer.get(),cfg);

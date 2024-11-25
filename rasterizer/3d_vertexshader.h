@@ -51,13 +51,48 @@ public:
 
 		const t_base_types::template t_fb *pVertexBuffer=pMesh->getvertexbuffer();
 
-		mat4<t_base_types::template t_flt>::mul(pMesh->getcompositetrns(),pCamera->gettrns(),pScratch->getmat4scratch());
+		mat4<t_base_types::template t_flt>::mul(pFrame->getcompositetrns(),pCamera->gettrns(),pScratch->getmat4scratch());
 		mat4<t_base_types::template t_flt>::mul(pScratch->getmat4scratch(),pProjection->gettrns(),pScratch->getmat4modeltoclipspace());
 		
 		if(t_base_types::template t_xform_face::xform_normal())
-			pScratch->getmat4transposedinversemodeltoworld()=(pMesh->getcompositetrns().inverse()).transpose(); // needed for normal transform
+			pScratch->getmat4transposedinversemodeltoworld()=(pFrame->getcompositetrns().inverse()).transpose(); // needed for normal transform
 
-		t_base_types::template t_fb::xform<projectionclipper<>::et_all,t_vs_types>(pSched,pMesh->getcompositetrns(),pScratch->getmat4transposedinversemodeltoworld(),pScratch->getmat4modeltoclipspace(),pVertexBuffer,pScratch->getmutablexformed());
+		t_base_types::template t_fb::xform<projectionclipper<>::et_all,t_vs_types>(pSched,pFrame->getcompositetrns(),pScratch->getmat4transposedinversemodeltoworld(),pScratch->getmat4modeltoclipspace(),pVertexBuffer,pScratch->getmutablexformed());
+	}
+};
+
+template <typename VST> class silhouette_vertexshader
+{
+public:
+	using t_vs_types=VST;
+	using t_base_types=VST::template t_base_types;
+	
+	static void render(const afthread::taskscheduler *pSched,
+					   const vertexattsframe<t_base_types::template t_flt> *pFrame,const t_base_types::template t_flt dSilhouetteWorldScale,
+					   const camera<t_base_types::template t_flt> *pCamera,const t_vs_types::template t_proj *pProjection,
+					   vertexshaderscratch<t_base_types::template t_flt> *pScratch)
+	{
+		if(!pFrame||!pCamera||!pProjection||!pScratch)return;
+
+		const mesh<t_base_types::template t_fb> *pMesh=static_cast<const mesh<t_base_types::template t_fb>*>(pFrame);
+
+		mat4<t_base_types::template t_flt> s;
+		s=pFrame->getcompositetrns();
+		vec3<t_base_types::template t_flt> worldOrigin;
+		s.mul(pFrame->getbbox(false).getorigin(),worldOrigin);
+		s.mul(translate3<t_base_types::template t_flt>(-worldOrigin));
+		s.mul(scale3<t_base_types::template t_flt>({dSilhouetteWorldScale,dSilhouetteWorldScale,dSilhouetteWorldScale}));
+		s.mul(translate3<t_base_types::template t_flt>(worldOrigin));
+
+		const t_base_types::template t_fb *pVertexBuffer=pMesh->getvertexbuffer();
+
+		mat4<t_base_types::template t_flt>::mul(s,pCamera->gettrns(),pScratch->getmat4scratch());
+		mat4<t_base_types::template t_flt>::mul(pScratch->getmat4scratch(),pProjection->gettrns(),pScratch->getmat4modeltoclipspace());
+		
+		if(t_base_types::template t_xform_face::xform_normal())
+			pScratch->getmat4transposedinversemodeltoworld()=(s.inverse()).transpose(); // needed for normal transform
+
+		t_base_types::template t_fb::xform<projectionclipper<>::et_all,t_vs_types>(pSched,s,pScratch->getmat4transposedinversemodeltoworld(),pScratch->getmat4modeltoclipspace(),pVertexBuffer,pScratch->getmutablexformed());
 	}
 };
 

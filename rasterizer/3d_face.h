@@ -30,7 +30,8 @@ public:
 		T t;
 		__forceinline void set(const vertex_data& src,const size_t n){t=(src[n]);}
 		__forceinline void lerp(const vertex& from,const vertex& to,const T::template t_flt dT){t.lerp(from.t,to.t,dT);}
-		__forceinline void barylerp(const vertex_data& src,const T::template t_flt dAlphaWa,const T::template t_flt dBetaWb,const T::template t_flt dGammaWc,const T::template t_flt dRecipWp){t.barylerp(dAlphaWa,dBetaWb,dGammaWc,dRecipWp,src[0],src[1],src[2]);}
+		template <bool REVERSE> __forceinline void barylerp(const vertex_data& src,const T::template t_flt dAlphaWa,const T::template t_flt dBetaWb,const T::template t_flt dGammaWc,const T::template t_flt dRecipWp){t.barylerp<REVERSE>(dAlphaWa,dBetaWb,dGammaWc,dRecipWp,src[0],src[1],src[2]);}
+		__forceinline void negate(void){t.negate();}
 		__forceinline void normalize(void){t.normalize();}
 	};
 
@@ -103,7 +104,7 @@ public:
 		vertex_data<T>::template vertex pos;
 		__forceinline void set(const face_pos_vertex_data& src,const size_t n){pos.set(src.getpos(),n);}
 		__forceinline void lerp(const face_pos_vertex_data& src,const vertex& from,const vertex& to,const T::template t_flt t){pos.lerp(from.pos,to.pos,t);}
-		__forceinline void barylerp(const face_pos_vertex_data& src,const T::template t_flt dAlphaWa,const T::template t_flt dBetaWb,const T::template t_flt dGammaWc,const T::template t_flt dRecipWp){pos.barylerp(src.getpos(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
+		template <bool REVERSE> __forceinline void barylerp(const face_pos_vertex_data& src,const T::template t_flt dAlphaWa,const T::template t_flt dBetaWb,const T::template t_flt dGammaWc,const T::template t_flt dRecipWp){pos.barylerp<REVERSE>(src.getpos(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
 	};
 	
 	face_pos_vertex_data(){}
@@ -170,10 +171,10 @@ public:
 			if(src.getsingular().get()!=vertex_data_singular::t_true)
 				col.lerp(from.col,to.col,t);
 		}
-		 __forceinline void barylerp(const face_col_vertex_data& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		 template <bool REVERSE> __forceinline void barylerp(const face_col_vertex_data& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
 			if(src.getsingular().get()!=vertex_data_singular::t_true)
-				col.barylerp(src.getcol(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+				col.barylerp<REVERSE>(src.getcol(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 		}
 	};
 
@@ -221,11 +222,11 @@ public:
 				norm.normalize();
 			}
 		}
-		__forceinline void barylerp(const face_norm_vertex_data& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
+		template <bool REVERSE> __forceinline void barylerp(const face_norm_vertex_data& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp)
 		{
 			if(src.getsingular().get()!=vertex_data_singular::t_true)
 			{
-				norm.barylerp(src.getnorm(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
+				norm.barylerp<REVERSE>(src.getnorm(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);
 				norm.normalize();
 			}
 		}
@@ -277,7 +278,7 @@ public:
 		vertex_data<vec2<T>>::template vertex tex;
 		__forceinline void set(const face_tex_vertex_data& src,const size_t n){tex.set(src.gettex(),n);}
 		__forceinline void lerp(const face_tex_vertex_data& src,const vertex& from,const vertex& to,const T t){tex.lerp(from.tex,to.tex,t);}
-		__forceinline void barylerp(const face_tex_vertex_data& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){tex.barylerp(src.gettex(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
+		template <bool REVERSE> __forceinline void barylerp(const face_tex_vertex_data& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){tex.barylerp<REVERSE>(src.gettex(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
 	};
 
 	face_tex_vertex_data(){}
@@ -346,7 +347,7 @@ public:
 		vertex_data<vec2<T>>::template vertex bump;
 		__forceinline void set(const face_bump_vertex_data& src,const size_t n){bump.set(src.getbump(),n);}
 		__forceinline void lerp(const face_bump_vertex_data& src,const vertex& from,const vertex& to,const T t){bump.lerp(from.bump,to.bump,t);}
-		__forceinline void barylerp(const face_bump_vertex_data& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){bump.barylerp(src.getbump(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
+		template <bool REVERSE> __forceinline void barylerp(const face_bump_vertex_data& src,const T dAlphaWa,const T dBetaWb,const T dGammaWc,const T dRecipWp){bump.barylerp<REVERSE>(src.getbump(),dAlphaWa,dBetaWb,dGammaWc,dRecipWp);}
 	};
 
 	face_bump_vertex_data(){}
