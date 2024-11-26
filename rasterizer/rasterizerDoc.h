@@ -54,6 +54,7 @@ public:
 	void setname(af3d::vertexattsframe<> *p,const std::string& s);
 	void setvisible(af3d::vertexattsframe<> *p,const bool b);
 	void setopacity(af3d::vertexattsframe<> *p,const RAS_FLTTYPE d);
+	void seteffect(af3d::vertexattsframe<> *p,const af3d::vertexattsframe<>::effecttype t);
 	void reparent(af3d::vertexattsframe<> *p,af3d::vertexattsframe<> *pParent,af3d::vertexattsframe<> *pTarget,const bool bAbove);
 	void erase(af3d::vertexattsframe<> *p);
 protected:

@@ -11,7 +11,7 @@ class hint : public CObject
 {
 public:
 	enum type {t_null=0,
-			   t_drag,t_selection,t_frame_visible,t_frame_name,t_frame_opacity,
+			   t_drag,t_selection,t_frame_visible,t_frame_name,t_frame_opacity,t_frame_effect,
 			   t_frame_append,t_frame_erase,t_frame_reparent,
 			   t_view_active,t_view_stop,t_initial_update,
 			   t_facebuffer_pos,t_facebuffer_norm,t_facebuffer_tex,t_facebuffer_col,t_facebuffer_bump,

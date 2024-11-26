@@ -499,6 +499,16 @@ void CrasterizerDoc::setname(af3d::vertexattsframe<> *p,const std::string& s)
 	theApp.UpdateAllViews(&hint(nullptr,this,hint::t_frame_name,p));
 }
 
+void CrasterizerDoc::seteffect(af3d::vertexattsframe<> *p,const af3d::vertexattsframe<>::effecttype t)
+{
+	if(!p || p->geteffect()==t)
+		return;
+
+	p->seteffect(t);
+
+	theApp.UpdateAllViews(&hint(nullptr,this,hint::t_frame_effect,p));
+}
+
 void CrasterizerDoc::setworld_aa_extents_translate(af3d::vertexattsframe<> *p,const RAS_FLTTYPE dExtent,const af3d::vec3<>& o) const
 {
 	const RAS_FLTTYPE dDstExtent=dExtent;

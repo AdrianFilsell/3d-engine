@@ -24,6 +24,7 @@ public:
 	enum { IDD = IDD_SCENE };
 	scenetree m_Tree;
 	CSliderCtrl m_OpacitySlider;
+	int m_nEffectCombo;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX) override;    // DDX/DDV support
 
@@ -38,11 +39,13 @@ protected:
 	afx_msg void OnTreeItemChanged(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnTreeItemEndLabelEdit(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg LRESULT OnTreeItemReparent(WPARAM wParam,LPARAM lParam);
+	afx_msg void OnEffectComboSelChanged(void);
 	DECLARE_MESSAGE_MAP()
 
 	CrasterizerView *m_pView;
 	CrasterizerDoc *m_pDoc;
 	std::map<af3d::vertexattsframe<>*,HTREEITEM> m_Map;
+	int m_nSliderComboGap;
 	bool m_bInOnUpdate;
 	
 	void clear(void);
@@ -53,6 +56,9 @@ protected:
 	void setframecheck(af3d::vertexattsframe<> *p);
 	void setframename(af3d::vertexattsframe<> *p);
 	void setframeopacity(af3d::vertexattsframe<> *p);
+	void setframeeffect(af3d::vertexattsframe<> *p);
 	HTREEITEM appendframe(af3d::vertexattsframe<> *p);
 	HTREEITEM insertframe(af3d::vertexattsframe<> *p);
+
+	void oneffectcomboselchanged(void);
 };

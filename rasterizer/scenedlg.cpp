@@ -13,6 +13,8 @@ scenedlg::scenedlg(CWnd* pParent /*=nullptr*/)
 	m_pView=nullptr;
 	m_pDoc=nullptr;
 	m_bInOnUpdate=false;
+	m_nSliderComboGap=0;
+	m_nEffectCombo=0;
 }
 
 scenedlg::~scenedlg()
@@ -24,6 +26,7 @@ void scenedlg::DoDataExchange(CDataExchange* pDX)
 	propertiesdlg::DoDataExchange(pDX);
 	DDX_Control(pDX,IDC_SCENE_TREE,m_Tree);
 	DDX_Control(pDX,IDC_OPACITY_SLIDER,m_OpacitySlider);
+	DDX_CBIndex(pDX,IDC_EFFECT_COMBO,m_nEffectCombo);
 }
 
 
@@ -31,11 +34,14 @@ BEGIN_MESSAGE_MAP(scenedlg,propertiesdlg)
 	ON_WM_ERASEBKGND()
 	ON_WM_SIZE()
     ON_WM_HSCROLL()
+
 	ON_NOTIFY(TVN_SELCHANGING,IDC_SCENE_TREE,&scenedlg::OnTreeSelChanging)
     ON_NOTIFY(TVN_SELCHANGED,IDC_SCENE_TREE,&scenedlg::OnTreeSelChanged)
 	ON_NOTIFY(TVN_ITEMCHANGED,IDC_SCENE_TREE,&scenedlg::OnTreeItemChanged)
 	ON_NOTIFY(TVN_ENDLABELEDIT,IDC_SCENE_TREE,&scenedlg::OnTreeItemEndLabelEdit)
 	ON_MESSAGE(WM_SCENETREE_REPARENT,&scenedlg::OnTreeItemReparent)
+
+	ON_CBN_SELCHANGE(IDC_EFFECT_COMBO,OnEffectComboSelChanged)
 END_MESSAGE_MAP()
 
 
@@ -49,6 +55,11 @@ BOOL scenedlg::OnInitDialog()
 
 	m_OpacitySlider.SetRange(0,100);
 	
+	CRect rc[2];
+	GetDlgItem(IDC_EFFECT_COMBO)->GetWindowRect(rc[0]);
+	m_OpacitySlider.GetWindowRect(rc[1]);
+	m_nSliderComboGap=rc[0].top-rc[1].bottom;
+
 	m_bInitialised=true;
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -61,6 +72,8 @@ BOOL scenedlg::OnEraseBkgnd(CDC *pDC)
 	vErase.push_back(&m_Tree);
 	vErase.push_back(&m_OpacitySlider);
 	vErase.push_back(GetDlgItem(IDC_OPACITY_STATIC));
+	vErase.push_back(GetDlgItem(IDC_EFFECT_STATIC));
+	vErase.push_back(GetDlgItem(IDC_EFFECT_COMBO));
 
 	splitterwnd::excludecliprect(pDC,vErase);
 
@@ -85,6 +98,35 @@ void scenedlg::OnSize(UINT nType,int cx,int cy)
 		vRepos.push_back({&m_Title,rcTitle});
 	}
 
+	CRect rcCombo;
+	if(GetDlgItem(IDC_EFFECT_COMBO))
+	{
+		CRect rcStatic;
+
+		GetDlgItem(IDC_EFFECT_COMBO)->GetWindowRect(rcCombo);
+		::MapWindowPoints(NULL,m_hWnd,(LPPOINT)&rcCombo,2);
+
+		GetDlgItem(IDC_EFFECT_STATIC)->GetWindowRect(rcStatic);
+		::MapWindowPoints(NULL,m_hWnd,(LPPOINT)&rcStatic,2);
+
+		const int nDY=rcClient.bottom-rcCombo.bottom;
+		rcCombo.OffsetRect(0,nDY);
+		rcStatic.OffsetRect(0,nDY);
+		if(rcCombo.top<rcTitle.bottom)
+		{
+			const int nDY=rcTitle.bottom-rcCombo.top;
+			rcCombo.OffsetRect(0,nDY);
+			rcStatic.OffsetRect(0,nDY);
+		}
+		
+		rcStatic.OffsetRect(2-rcStatic.left,0);
+		vRepos.push_back({GetDlgItem(IDC_EFFECT_STATIC),rcStatic});
+
+		rcCombo.OffsetRect(rcStatic.right+2-rcCombo.left,0);
+		rcCombo.right=rcClient.right;
+		vRepos.push_back({GetDlgItem(IDC_EFFECT_COMBO),rcCombo});
+	}
+
 	CRect rcSlider;
 	if(m_OpacitySlider.GetSafeHwnd())
 	{
@@ -96,7 +138,7 @@ void scenedlg::OnSize(UINT nType,int cx,int cy)
 		GetDlgItem(IDC_OPACITY_STATIC)->GetWindowRect(rcStatic);
 		::MapWindowPoints(NULL,m_hWnd,(LPPOINT)&rcStatic,2);
 
-		const int nDY=rcClient.bottom-rcSlider.bottom;
+		const int nDY=(rcCombo.top - m_nSliderComboGap)-rcSlider.bottom;
 		rcSlider.OffsetRect(0,nDY);
 		rcStatic.OffsetRect(0,nDY);
 		if(rcSlider.top<rcTitle.bottom)
@@ -272,6 +314,11 @@ void scenedlg::OnHScroll( UINT nSBCode, UINT nPos, CScrollBar *pScrollBar )
 	}
 }
 
+void scenedlg::OnEffectComboSelChanged(void)
+{
+	oneffectcomboselchanged();
+}
+
 BOOL scenedlg::PreTranslateMessage(MSG* pMsg)
 {
 	if(pMsg->message == WM_KEYDOWN)
@@ -385,6 +432,34 @@ void scenedlg::setframeopacity(af3d::vertexattsframe<> *p)
 	m_OpacitySlider.SetPos(nPos);
 }
 
+void scenedlg::setframeeffect(af3d::vertexattsframe<> *p)
+{
+	if(!p)
+	{
+		GetDlgItem(IDC_EFFECT_STATIC)->EnableWindow(false);
+		GetDlgItem(IDC_EFFECT_COMBO)->EnableWindow(false);
+		if(m_nEffectCombo!=0)
+		{
+			m_nEffectCombo=0;
+			UpdateData(false);
+		}
+		return;
+	}
+	GetDlgItem(IDC_EFFECT_STATIC)->EnableWindow(true);
+	GetDlgItem(IDC_EFFECT_COMBO)->EnableWindow(true);
+	const af3d::vertexattsframe<>::effecttype t=p->geteffect();
+	int n=0;
+	switch(t)
+	{
+		case af3d::vertexattsframe<>::et_null:break;
+		case af3d::vertexattsframe<>::et_silhouette:n=1;break;
+	}
+	if(n==m_nEffectCombo)
+		return;
+	m_nEffectCombo=n;
+	UpdateData(false);
+}
+
 void scenedlg::selectframe(af3d::vertexattsframe<> *p)
 {
 	HTREEITEM hItem=nullptr;
@@ -479,6 +554,25 @@ void scenedlg::eraseframe(af3d::vertexattsframe<> *p)
 	}
 }
 
+void scenedlg::oneffectcomboselchanged(void)
+{
+	UpdateData();
+
+	af3d::vertexattsframe<>::effecttype t=af3d::vertexattsframe<>::et_null;
+	switch(m_nEffectCombo)
+	{
+		case 0:break;
+		case 1:t=af3d::vertexattsframe<>::et_silhouette;break;
+	}
+	
+	const bool bSel=m_pView && m_pView->getselection();
+	if(!bSel)
+		return;
+
+	if(m_pDoc)
+		m_pDoc->seteffect(m_pView->getselection(),t);
+}
+
 int scenedlg::getmin(void)const
 {
 	if(!GetSafeHwnd())
@@ -505,7 +599,7 @@ void scenedlg::onupdate(hint *p)
 			case hint::t_initial_update:
 			case hint::t_view_active:
 			{
-				if(theApp.getinitialised() && p->getdoc()!=m_pDoc)
+				if(theApp.getinitialised() && (p->getdoc()!=m_pDoc || p->getview()!=m_pView))
 				{
 					clear();
 					m_pView=p->getview();
@@ -514,6 +608,7 @@ void scenedlg::onupdate(hint *p)
 					expandframe(m_pDoc?m_pDoc->getscene():nullptr);
 					selectframe(m_pView?m_pView->getselection():nullptr);
 					setframeopacity(m_pView?m_pView->getselection():nullptr);
+					setframeeffect(m_pView?m_pView->getselection():nullptr);
 					m_Tree.Invalidate();
 				}
 			}
@@ -524,7 +619,7 @@ void scenedlg::onupdate(hint *p)
 					clear();
 			}
 			break;
-			case hint::t_selection:if(m_pView){selectframe(p->getframe());setframeopacity(p->getframe());}break;
+			case hint::t_selection:if(m_pView){selectframe(p->getframe());setframeopacity(p->getframe());setframeeffect(p->getframe());}break;
 			case hint::t_frame_append:if(m_pView)appendframe(p->getframe());m_Tree.Invalidate();break;
 			case hint::t_frame_erase:if(m_pView)eraseframe(p->getframe());m_Tree.Invalidate();break;
 			case hint::t_frame_visible:
@@ -543,6 +638,12 @@ void scenedlg::onupdate(hint *p)
 			{
 				if(p->getdoc()==m_pDoc)
 					setframeopacity(p->getframe());
+			}
+			break;
+			case hint::t_frame_effect:
+			{
+				if(p->getdoc()==m_pDoc)
+					setframeeffect(p->getframe());
 			}
 			break;
 			case hint::t_frame_reparent:

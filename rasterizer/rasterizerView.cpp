@@ -242,6 +242,7 @@ void CrasterizerView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			case hint::t_frame_reparent:
 			case hint::t_frame_append:
 			case hint::t_facebuffer_pos:
+			case hint::t_frame_effect:
 			case hint::t_frame_opacity:bComposeShadowMaps=!m_bStopping;
 
 			case hint::t_light_atten:

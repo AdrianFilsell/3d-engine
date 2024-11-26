@@ -997,7 +997,7 @@ void facesdlg::onupdate(hint *p)
 			case hint::t_initial_update:
 			case hint::t_view_active:
 			{
-				if(theApp.getinitialised() && p->getdoc()!=m_pDoc)
+				if(theApp.getinitialised() && (p->getdoc()!=m_pDoc || p->getview()!=m_pView))
 				{
 					clear();
 					m_pView=p->getview();

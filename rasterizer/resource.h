@@ -113,6 +113,8 @@
 #define IDC_MAT_DIFFUSE_CHECK           1095
 #define IDC_MAT_SHININESS_CHECK         1096
 #define IDC_EFFECT_COMBO                1097
+#define IDC_EFFECT_STATIC               1098
+#define IDC_COMBO1                      1099
 #define ID_CAMERA_FRONT                 32772
 #define ID_CAMERA_BACK                  32773
 #define ID_CAMERA_LEFT                  32774
@@ -154,9 +156,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        328
+#define _APS_NEXT_RESOURCE_VALUE        329
 #define _APS_NEXT_COMMAND_VALUE         32822
-#define _APS_NEXT_CONTROL_VALUE         1098
+#define _APS_NEXT_CONTROL_VALUE         1100
 #define _APS_NEXT_SYMED_VALUE           327
 #endif
 #endif
