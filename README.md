@@ -5,7 +5,8 @@ Supports:
    Flexible rendering pipeline - Multiple lights (spot/point/directional) -
    Hierarchical scene structure - Shadow maps - Texture maps - Bump maps -
    Cubic environment maps - Quantize diffuse colour - Quantize specular highlight -
-   Silhouette - Cel Shading - Multi core aware.
+   Silhouette - Cel Shading - Mesh transform tools - Camera transform tools -
+   Multi core aware.
    
 Written using MFC/C++/eigenlib/jpeglib, more details can be found here:
 
