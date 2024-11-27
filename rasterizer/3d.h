@@ -75,9 +75,16 @@ public:
 	__forceinline void setempty(const bool b){m_bEmpty=b;}
 	__forceinline T quantize(const T d)const
 	{
-		if(d<0.5)return 0;
-		if(d<1.0)return 0.5;
-		return 1.0;
+		constexpr bool bFloor=false;
+		if(bFloor)
+		{
+			if(d<0.5)return 0;
+			if(d<1.0)return 0.5;
+			return 1.0;
+		}
+		if(d>0.5)return 1.0;
+		if(d>0.0)return 0.5;
+		return 0.0;
 	}
 protected:
 	bool m_bEmpty;

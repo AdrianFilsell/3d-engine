@@ -33,6 +33,8 @@ public:
 	CEdit m_ShininessEdit;
 	CString m_csShininess;
 	int m_nColourEnable;
+	int m_nQuantizeDiffuse;
+	int m_nQuantizeShininess;
 	
 	CComboBox m_ImageCombo;
 	int m_nImage;
@@ -66,6 +68,9 @@ protected:
 
 	afx_msg void OnShininessChange(void);
 	afx_msg void OnShininessKillFocus(void);
+
+	afx_msg void OnQuantizeDiffuse(void);
+	afx_msg void OnQuantizeShininess(void);
 
 	afx_msg void OnImageComboSelChanged(void);
 	afx_msg void OnImageCheck(void);
@@ -109,6 +114,8 @@ protected:
 	void getshininess(CString& cs)const;
 	void getimage(CString& cs)const;
 	void getimageon(int& n)const;
+	void getquantizediffuse(int& n)const;
+	void getquantizeshininess(int& n)const;
 
 	void setcol(const af3d::vec3<>& c);
 	void setcolon(const bool b)const;
@@ -118,6 +125,8 @@ protected:
 	void setshininess(const double d)const;
 	void setimage(const CString& cs)const;
 	void setimageon(const bool b)const;
+	void setquantizediffuse(const int n);
+	void setquantizeshininess(const int n);
 
 	void onfromtochange(const bool bFrom);
 	void onfromtokillfocus(const bool bFrom);

@@ -16,7 +16,7 @@ public:
 			   t_view_active,t_view_stop,t_initial_update,
 			   t_facebuffer_pos,t_facebuffer_norm,t_facebuffer_tex,t_facebuffer_col,t_facebuffer_bump,
 			   t_light_atten,t_light_range,t_spotlight_umbra_penumbra,t_light_col,
-			   t_material_add,t_material_del,t_material_range,t_material_col,t_material_enable,t_material_shininess,t_material_image};
+			   t_material_add,t_material_del,t_material_range,t_material_col,t_material_enable,t_material_shininess,t_material_image,t_material_quantize_diffuse,t_material_quantize_specular};
 	
 	hint(){m_pMat=nullptr;m_pDoc=nullptr;m_pView=nullptr;m_Type=t_null;m_DragType=viewtool::td_null;m_pFrame=nullptr;m_pCamera=nullptr;}
 	hint(CrasterizerView *pV,CrasterizerDoc *pD,const type t):hint(){m_pDoc=pD;m_pView=pV;m_Type=t;}

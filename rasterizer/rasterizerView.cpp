@@ -257,6 +257,8 @@ void CrasterizerView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			case hint::t_material_enable:
 			case hint::t_material_shininess:
 			case hint::t_material_image:
+			case hint::t_material_quantize_diffuse:
+			case hint::t_material_quantize_specular:
 
 			case hint::t_facebuffer_norm:
 			case hint::t_facebuffer_tex:

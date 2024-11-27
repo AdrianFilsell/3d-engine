@@ -1,8 +1,6 @@
 
 implement topleft rule
 
-cel shading
-
 turn backface cull off/on
 
 nurbs

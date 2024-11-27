@@ -37,6 +37,8 @@ materialsdlg::materialsdlg(CWnd* pParent /*=nullptr*/)
 
 	m_nColourEnable=BST_CHECKED;
 	m_nImageEnable=BST_CHECKED;
+	m_nQuantizeDiffuse=BST_UNCHECKED;
+	m_nQuantizeShininess=BST_UNCHECKED;
 }
 
 materialsdlg::~materialsdlg()
@@ -69,6 +71,8 @@ void materialsdlg::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Check(pDX,IDC_COLOUR_CHECK,m_nColourEnable);
 	DDX_Check(pDX,IDC_IMAGE_CHECK,m_nImageEnable);
+	DDX_Check(pDX,IDC_QUANTIZE_DIFFUSE_CHECK,m_nQuantizeDiffuse);
+	DDX_Check(pDX,IDC_QUANTIZE_SPECULAR_CHECK,m_nQuantizeShininess);
 }
 
 
@@ -92,6 +96,9 @@ BEGIN_MESSAGE_MAP(materialsdlg,propertiesdlg)
 
 	ON_EN_CHANGE(IDC_SHININESS_EDIT,OnShininessChange)
 	ON_EN_KILLFOCUS(IDC_SHININESS_EDIT,OnShininessKillFocus)
+
+	ON_BN_CLICKED(IDC_QUANTIZE_DIFFUSE_CHECK,OnQuantizeDiffuse)
+	ON_BN_CLICKED(IDC_QUANTIZE_SPECULAR_CHECK,OnQuantizeShininess)
 
 	ON_CBN_SELCHANGE(IDC_IMAGE_COMBO,OnImageComboSelChanged)
 	ON_BN_CLICKED(IDC_IMAGE_CHECK,OnImageCheck)
@@ -158,6 +165,8 @@ BOOL materialsdlg::OnEraseBkgnd(CDC *pDC)
 	vErase.push_back(GetDlgItem(IDC_COLOUR_CHECK));
 	vErase.push_back(GetDlgItem(IDC_SHININESS_STATIC));
 	vErase.push_back(&m_ShininessEdit);
+	vErase.push_back(GetDlgItem(IDC_QUANTIZE_DIFFUSE_CHECK));
+	vErase.push_back(GetDlgItem(IDC_QUANTIZE_SPECULAR_CHECK));
 
 	vErase.push_back(GetDlgItem(IDC_IMAGE_EDGE));
 	vErase.push_back(GetDlgItem(IDC_IMAGE_BROWSE));
@@ -445,6 +454,30 @@ void materialsdlg::OnShininessKillFocus(void)
 		return;
 
 	setshininess(_tcstod(csPost,&pNull));
+}
+
+void materialsdlg::OnQuantizeDiffuse(void)
+{
+	if(!m_bInitialised)
+		return;
+	if(m_bInOnUpdate)
+		return;
+
+	UpdateData();
+
+	setquantizediffuse(m_nQuantizeDiffuse);
+}
+
+void materialsdlg::OnQuantizeShininess(void)
+{
+	if(!m_bInitialised)
+		return;
+	if(m_bInOnUpdate)
+		return;
+
+	UpdateData();
+
+	setquantizeshininess(m_nQuantizeShininess);
 }
 
 void materialsdlg::OnImageComboSelChanged(void)
@@ -805,6 +838,8 @@ void materialsdlg::enabledisable(void)
 	GetDlgItem(IDC_COLOUR_CHECK)->EnableWindow(bMat);
 	GetDlgItem(IDC_SHININESS_STATIC)->EnableWindow(bMat && m_nColourEnable);
 	m_ShininessEdit.EnableWindow(bMat && m_nColourEnable);
+	GetDlgItem(IDC_QUANTIZE_DIFFUSE_CHECK)->EnableWindow(bMat);
+	GetDlgItem(IDC_QUANTIZE_SPECULAR_CHECK)->EnableWindow(bMat);
 
 	m_ImageCombo.EnableWindow(bMat);
 	GetDlgItem(IDC_IMAGE_BROWSE)->EnableWindow(bImageVertexAtts && bMat && m_nImageEnable);
@@ -868,6 +903,20 @@ void materialsdlg::getcol(af3d::vec3<>& c)const
 			case 1:c=p->getcol().getspecular();break;
 			case 2:c=p->getcol().getambient();break;
 		}
+}
+
+void materialsdlg::getquantizediffuse(int& n)const
+{
+	af3d::material<> *p=getmaterial();
+	if(p)
+		n=p->getcol().getdiffusequantize().isempty()?BST_UNCHECKED:BST_CHECKED;
+}
+
+void materialsdlg::getquantizeshininess(int& n)const
+{
+	af3d::material<> *p=getmaterial();
+	if(p)
+		n=p->getcol().getspecularquantize().isempty()?BST_UNCHECKED:BST_CHECKED;
 }
 
 void materialsdlg::getshininess(CString& cs)const
@@ -951,6 +1000,36 @@ void materialsdlg::setcol(const af3d::vec3<>& c)
 		p->setcol(matcol);
 
 		theApp.UpdateAllViews(&hint(m_pView,m_pDoc,hint::t_material_col,m_pView->getselection()));
+	}
+}
+
+void materialsdlg::setquantizediffuse(const int n)
+{
+	af3d::material<> *p=getmaterial();
+	if(p)
+	{
+		af3d::materialcol<> matcol=p->getcol();
+		af3d::quantize_static_3<> q=matcol.getdiffusequantize();
+		q.setempty(n==BST_CHECKED?false:true);
+		matcol.setdiffusequantize(q);
+		p->setcol(matcol);
+
+		theApp.UpdateAllViews(&hint(m_pView,m_pDoc,hint::t_material_quantize_diffuse,m_pView->getselection()));
+	}
+}
+
+void materialsdlg::setquantizeshininess(const int n)
+{
+	af3d::material<> *p=getmaterial();
+	if(p)
+	{
+		af3d::materialcol<> matcol=p->getcol();
+		af3d::quantize_static_3<> q=matcol.getspecularquantize();
+		q.setempty(n==BST_CHECKED?false:true);
+		matcol.setspecularquantize(q);
+		p->setcol(matcol);
+
+		theApp.UpdateAllViews(&hint(m_pView,m_pDoc,hint::t_material_quantize_specular,m_pView->getselection()));
 	}
 }
 
@@ -1094,6 +1173,9 @@ void materialsdlg::onupdate(hint *p)
 
 					getshininess(m_csShininess);
 
+					getquantizediffuse(m_nQuantizeDiffuse);
+					getquantizeshininess(m_nQuantizeShininess);
+
 					af3d::vec3<> c;
 					getcol(c);
 					m_ColWnd.setcol(c);
@@ -1135,6 +1217,9 @@ void materialsdlg::onupdate(hint *p)
 
 					getshininess(m_csShininess);
 
+					getquantizediffuse(m_nQuantizeDiffuse);
+					getquantizeshininess(m_nQuantizeShininess);
+
 					af3d::vec3<> c;
 					getcol(c);
 					m_ColWnd.setcol(c);
@@ -1173,6 +1258,9 @@ void materialsdlg::onupdate(hint *p)
 
 				getshininess(m_csShininess);
 
+				getquantizediffuse(m_nQuantizeDiffuse);
+				getquantizeshininess(m_nQuantizeShininess);
+
 				af3d::vec3<> c;
 				getcol(c);
 				m_ColWnd.setcol(c);
@@ -1210,6 +1298,20 @@ void materialsdlg::onupdate(hint *p)
 
 					UpdateData(false);
 				}
+			}
+			break;
+			case hint::t_material_quantize_diffuse:
+			{
+				getquantizediffuse(m_nQuantizeDiffuse);
+				
+				UpdateData(false);
+			}
+			break;
+			case hint::t_material_quantize_specular:
+			{
+				getquantizeshininess(m_nQuantizeShininess);
+				
+				UpdateData(false);
 			}
 			break;
 			case hint::t_material_col:
