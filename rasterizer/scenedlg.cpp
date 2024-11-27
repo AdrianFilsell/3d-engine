@@ -302,10 +302,9 @@ void scenedlg::OnHScroll( UINT nSBCode, UINT nPos, CScrollBar *pScrollBar )
 			case TB_PAGEDOWN:
 			{
 				const RAS_FLTTYPE d=m_OpacitySlider.GetPos()/100.0;
-				HTREEITEM hItem = m_Tree.GetSelectedItem();
-				if(hItem && m_pDoc)
+				if(m_pView && m_pView->getselection())
 				{
-					af3d::vertexattsframe<> *p=reinterpret_cast<af3d::vertexattsframe<>*>(m_Tree.GetItemData(hItem));
+					af3d::vertexattsframe<> *p=m_pView->getselection();
 					m_pDoc->setopacity(p,d);
 				}
 			}
@@ -415,21 +414,20 @@ void scenedlg::setframename(af3d::vertexattsframe<> *p)
 
 void scenedlg::setframeopacity(af3d::vertexattsframe<> *p)
 {
-	auto i=m_Map.find(p);
-	if(i==m_Map.cend())
+	if(!p)
 	{
+		const int nPos=0;
+		if(m_OpacitySlider.GetPos()!=nPos)
+			m_OpacitySlider.SetPos(nPos);
 		GetDlgItem(IDC_OPACITY_STATIC)->EnableWindow(false);
 		m_OpacitySlider.EnableWindow(false);
 		return;
 	}
 	GetDlgItem(IDC_OPACITY_STATIC)->EnableWindow(true);
 	m_OpacitySlider.EnableWindow(true);
-	if(m_Tree.GetSelectedItem()!=(*i).second)
-		return;
 	const int nPos=af::posround<RAS_FLTTYPE,int>(p->getopacity()*100.0);
-	if(m_OpacitySlider.GetPos()==nPos)
-		return;
-	m_OpacitySlider.SetPos(nPos);
+	if(m_OpacitySlider.GetPos()!=nPos)
+		m_OpacitySlider.SetPos(nPos);
 }
 
 void scenedlg::setframeeffect(af3d::vertexattsframe<> *p)
