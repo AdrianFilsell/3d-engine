@@ -12,6 +12,7 @@ Written using MFC/C++/eigenlib/jpeglib, more details can be found here:
 
 [https://www.youtube.com/watch?v=DgvHXth6mK4](https://www.youtube.com/watch?v=DgvHXth6mK4)
 [https://www.youtube.com/watch?v=_aUNkUBCwBc](https://www.youtube.com/watch?v=_aUNkUBCwBc)
+[https://www.youtube.com/watch?v=zHGe1bH2W8M(https://www.youtube.com/watch?v=zHGe1bH2W8M)
 
 Example of a scene:
 
