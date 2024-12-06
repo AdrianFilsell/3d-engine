@@ -12,6 +12,7 @@ Written using MFC/C++/eigenlib/jpeglib, more details can be found here:
 
 [https://www.youtube.com/watch?v=DgvHXth6mK4](https://www.youtube.com/watch?v=DgvHXth6mK4)
 [https://www.youtube.com/watch?v=_aUNkUBCwBc](https://www.youtube.com/watch?v=_aUNkUBCwBc)
+[https://www.youtube.com/watch?v=zHGe1bH2W8M](https://www.youtube.com/watch?v=zHGe1bH2W8M).
 
 Example of a scene:
 
@@ -21,9 +22,10 @@ Example of a scene with texture/bump map materials:
 
 ![Alt text](/bump_tex_cover.png?raw=true "example texture/bump map scene")
 
-Example of a scene with cel shading:
+Examples of a scene with cel shading:
 
 ![Alt text](/cel_shading_cover.png?raw=true "example texture/cel_shading scene")
+![Alt text](/cel_shading_2_cover.png?raw=true "example texture/cel_shading scene 2")
 
 Example of a scene with shadow maps:
 
