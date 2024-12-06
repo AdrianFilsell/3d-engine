@@ -60,12 +60,12 @@ template <typename T> constexpr __forceinline T getdegree( const T dRad )
 	return ( dRad * 180.0 ) / getpi<T>();
 }
 
-template <typename T> __forceinline void posbase_pow_multipliers(const T nonnegexpo,std::vector<bool>& vMultipliers)
+template <typename T> __forceinline void posbase_pow_multipliers(const T nonnegexpo,std::vector<int>& vMultipliers)
 {
 	long integerExponent = static_cast<long>(nonnegexpo);
 	while (integerExponent)
 	{
-		vMultipliers.push_back((integerExponent % 2 == 1));
+		vMultipliers.push_back(integerExponent % 2);
 		integerExponent /= 2;
 	}
 }
@@ -85,7 +85,7 @@ public:
 	~nonnegpowerexp(){}
 	__forceinline T getexp(void)const{return m_dExp;}
 	__forceinline T getfracpart(void)const{return m_dFracPart;}
-	__forceinline const std::vector<bool>& getmultipliers(void)const{return m_vMultipliers;}
+	__forceinline const std::vector<int>& getmultipliers(void)const{return m_vMultipliers;}
 	__forceinline size_t size(void)const{return m_nMultipliers;}
 	nonnegpowerexp& operator =(const nonnegpowerexp& o)
 	{
@@ -99,7 +99,7 @@ protected:
 	T m_dExp;
 	T m_dFracPart;
 	size_t m_nMultipliers;
-	std::vector<bool> m_vMultipliers;
+	std::vector<int> m_vMultipliers; // dont want the specialized std::vector<bool>
 };
 
 template <typename T> __forceinline T nonneg_pow(const T nonnegbase, const T nonnegexpo)
@@ -157,13 +157,17 @@ template <typename T> __forceinline T nonneg_pow(const T nonnegbase, const nonne
 	T result = 1.0;
 	T currentMultiplier = nonnegbase;
 
-	for(size_t n=0;n<nonnegexpo.size();++n)
+	size_t n=0;
+	const int *pBools = &(nonnegexpo.getmultipliers()[0]);
+	for(;n<nonnegexpo.size()-1;++n)
 	{
-		if (nonnegexpo.getmultipliers()[n])
+		if (pBools[n])
 			result *= currentMultiplier;
 		currentMultiplier *= currentMultiplier;
 	}
-
+	if (pBools[n])
+		result *= currentMultiplier;
+	
 	// Compute the fractional part using standard library function
 	if (nonnegexpo.getfracpart() != 0)
 		result *= exp(log(nonnegbase) * nonnegexpo.getfracpart());
