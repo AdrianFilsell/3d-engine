@@ -187,7 +187,13 @@ protected:
 					return;
 				}
 				spot_pnt_lightDirNorm=spot_pnt_lightDir;
-				spot_pnt_lightDirNorm.normalize();
+				if(distance)
+				{
+					const T dRecip=1/distance;
+					spot_pnt_lightDirNorm[0]=spot_pnt_lightDir[0]*dRecip;
+					spot_pnt_lightDirNorm[1]=spot_pnt_lightDir[1]*dRecip;
+					spot_pnt_lightDirNorm[2]=spot_pnt_lightDir[2]*dRecip;
+				}
 				dClampedDot=fragnorm.dot(spot_pnt_lightDirNorm);
 				
 				if(bSpecular)
