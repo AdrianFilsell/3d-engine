@@ -158,15 +158,14 @@ template <typename T> __forceinline T nonneg_pow(const T nonnegbase, const nonne
 	T currentMultiplier = nonnegbase;
 
 	size_t n=0;
-	const int *pBools = &(nonnegexpo.getmultipliers()[0]);
+	const int *pOddBools = &(nonnegexpo.getmultipliers()[0]);
 	for(;n<nonnegexpo.size()-1;++n)
 	{
-		if (pBools[n])
+		if (pOddBools[n])
 			result *= currentMultiplier;
 		currentMultiplier *= currentMultiplier;
 	}
-	if (pBools[n])
-		result *= currentMultiplier;
+	result *= currentMultiplier;
 	
 	// Compute the fractional part using standard library function
 	if (nonnegexpo.getfracpart() != 0)
